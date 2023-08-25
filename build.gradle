@@ -6,7 +6,7 @@ buildscript {
     ext.coroutine_adapter_version = "0.9.2"
     ext.timber_version = "5.0.1"
     ext.kodein_version = "7.19.0"
-    ext.nav_version = "2.7.1"
+    ext.nav_version = "2.5.3"
 
     dependencies {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
