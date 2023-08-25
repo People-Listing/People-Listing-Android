@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PeopleListing</string>
+    <string name="list_user_title">Your People</string>
 </resources>

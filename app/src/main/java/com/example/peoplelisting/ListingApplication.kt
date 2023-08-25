@@ -6,11 +6,12 @@ import com.example.peoplelisting.data.di.repoModule
 import com.example.peoplelisting.data.di.serviceModule
 import com.example.peoplelisting.data.di.viewModelModule
 import org.kodein.di.DI
+import org.kodein.di.DIAware
 import timber.log.Timber
 
-class ListingApplication: Application() {
+class ListingApplication: Application(), DIAware {
 
-    val di: DI = DI.lazy {
+    override val di: DI = DI.lazy {
         import(viewModelModule)
         import(serviceModule)
         import(repoModule)
