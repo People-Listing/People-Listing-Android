@@ -34,7 +34,7 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) : ViewM
                     }
                     _usersResponse.setSuccess(personsDto)
                 } else {
-                    Timber.tag("api error").i("${res.errorBody()} ${res.body()}")
+                    Timber.tag("api error").i("${res.errorBody()?.string()} ${res.body()}")
                     _usersResponse.setFailure()
                 }
             } catch (ex: Exception) {

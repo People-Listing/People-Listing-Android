@@ -7,7 +7,6 @@ import retrofit2.http.Headers
 
 interface PeopleService {
 
-    @Headers("Content-Type: application/json")
     @GET("getUsers")
     suspend fun getPeople(): Response<List<Person>>
 }

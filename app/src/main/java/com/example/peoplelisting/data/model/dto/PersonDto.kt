@@ -4,5 +4,6 @@ data class PersonDto(
     val name: String = "",
     val age: Int = -1,
     val profession: String = "",
-    val id: String? = null
+    val id: String? = null,
+    var isLoading: Boolean = false
 )

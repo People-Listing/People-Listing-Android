@@ -29,33 +29,48 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
 
     }
 
+    private fun setLoading() {
+        binding.apiState.hide()
+        binding.fab.hide()
+        binding.totalCount.hide()
+        (binding.people.adapter as PeopleListingAdapter).submitList(List(10) {
+            PersonDto().apply { isLoading = true }
+        })
+    }
+
+    private fun stopLoading() {
+        binding.apiState.hide()
+        binding.fab.show()
+        binding.totalCount.show()
+    }
+
     private fun manageSubscription() {
         viewModel.usersResponse.observe(viewLifecycleOwner) {
             if (it == null) return@observe
             when (it.resourceState) {
                 ResourceState.LOADING -> {
-                    binding.totalCount.hide()
-                    binding.people.hide()
-                    binding.fab.hide()
-                    binding.apiState.text = "LOADING..."
-                    binding.apiState.show()
-
+                    setLoading()
                 }
 
                 ResourceState.SUCCESS -> {
-                    binding.people.show()
-                    binding.fab.show()
-                    binding.apiState.hide()
+                    stopLoading()
+                    if(it.data?.isEmpty() == true) {
+                        binding.totalCount.hide()
+                        binding.people.hide()
+                        binding.fab.hide()
+                        binding.apiState.text = "Nothing Found"
+                        binding.apiState.show()
+                    }
                     (binding.people.adapter as PeopleListingAdapter).submitList(it.data)
                     setTotalCount(it.data?.count() ?: 0)
                 }
 
                 ResourceState.ERROR -> {
-                    binding.totalCount.hide()
-                    binding.people.hide()
-                    binding.fab.hide()
-                    binding.apiState.text = "ERROR !!"
-                    binding.apiState.show()
+//                    binding.totalCount.hide()
+//                    binding.people.hide()
+//                    binding.fab.hide()
+//                    binding.apiState.text = "ERROR !!"
+//                    binding.apiState.show()
                 }
             }
         }
