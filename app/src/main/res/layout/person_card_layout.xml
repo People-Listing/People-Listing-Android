@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="@dimen/spacing_large"
+    android:background="@drawable/person_card_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing_bigger">
+
+    <LinearLayout
+        android:layout_width="@dimen/name_age_width"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_large"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/din_bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/name_text_size"
+            tools:text="Omar" />
+
+        <TextView
+            android:id="@+id/age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:fontFamily="@font/din_bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/age_text_size"
+            tools:text="23 years old" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/profession"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/din_bold"
+        android:gravity="center|start"
+        android:textColor="@color/black"
+        android:textSize="@dimen/profession_text_size"
+        android:textStyle="italic"
+        tools:text="Software Engineer" />
+</androidx.appcompat.widget.LinearLayoutCompat>

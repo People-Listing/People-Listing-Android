@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="titleTextSize">24sp</dimen>
+
+    <!--region users listing-->
+    <dimen name="totalCountTextSize">16sp</dimen>
+    <dimen name="profession_text_size">18sp</dimen>
+    <dimen name="name_text_size">20sp</dimen>
+    <dimen name="age_text_size">16sp</dimen>
+    <dimen name="name_age_width">150dp</dimen>
+    <!--endregion-->
+
+
+    <!--region spacing-->
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_regular">10dp</dimen>
+    <dimen name="spacing_normal">16dp</dimen>
+    <dimen name="spacing_bigger">22dp</dimen>
+    <dimen name="spacing_large">32dp</dimen>
+    <!--endregion-->
 </resources>

@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">PeopleListing</string>
     <string name="list_user_title">Your People</string>
-</resources>
+
+    <!--region users listing-->
+    <string name="total_count">Total count: %s</string>
+    <plurals name="age_years_old">
+        <item quantity="one">%s year old</item>
+        <item quantity="other">%s years old</item>
+    </plurals>
+    </resources>
