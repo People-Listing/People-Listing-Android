@@ -14,6 +14,9 @@ import com.example.peoplelisting.internal.extensions.show
 import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.internal.utilities.getFont
 import com.example.peoplelisting.ui.base.BaseFragment
+import com.example.peoplelisting.ui.snackbar.CustomSnackBar
+import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
+import com.example.peoplelisting.ui.snackbar.SnackBarData
 import org.kodein.di.android.x.viewmodel.viewModel
 
 class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
@@ -29,19 +32,26 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
 
     }
 
-    private fun setLoading() {
-        binding.apiState.hide()
+    private fun startLoading() {
+        binding.emptyResult.hide()
         binding.fab.hide()
         binding.totalCount.hide()
-        (binding.people.adapter as PeopleListingAdapter).submitList(List(10) {
+        (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
             PersonDto().apply { isLoading = true }
         })
     }
 
     private fun stopLoading() {
-        binding.apiState.hide()
+        binding.emptyResult.hide()
         binding.fab.show()
         binding.totalCount.show()
+    }
+
+    private fun setEmptyResult() {
+        binding.totalCount.hide()
+        binding.people.hide()
+        binding.fab.hide()
+        binding.emptyResult.show()
     }
 
     private fun manageSubscription() {
@@ -49,28 +59,25 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
             if (it == null) return@observe
             when (it.resourceState) {
                 ResourceState.LOADING -> {
-                    setLoading()
+                    startLoading()
                 }
 
                 ResourceState.SUCCESS -> {
-                    stopLoading()
                     if(it.data?.isEmpty() == true) {
-                        binding.totalCount.hide()
-                        binding.people.hide()
-                        binding.fab.hide()
-                        binding.apiState.text = "Nothing Found"
-                        binding.apiState.show()
+                        setEmptyResult()
+                    } else {
+                        stopLoading()
+                        (binding.people.adapter as PeopleListingAdapter).submitList(it.data)
+                        setTotalCount(it.data?.count() ?: 0)
                     }
-                    (binding.people.adapter as PeopleListingAdapter).submitList(it.data)
-                    setTotalCount(it.data?.count() ?: 0)
                 }
 
                 ResourceState.ERROR -> {
-//                    binding.totalCount.hide()
-//                    binding.people.hide()
-//                    binding.fab.hide()
-//                    binding.apiState.text = "ERROR !!"
-//                    binding.apiState.show()
+                    val message = it.message ?: getString(R.string.get_people_error)
+                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
+                        viewModel.getMyPeople()
+                    }))
+                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
                 }
             }
         }

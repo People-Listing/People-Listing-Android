@@ -4,15 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.data.resource.Resource
 import com.example.peoplelisting.internal.extensions.setFailure
 import com.example.peoplelisting.internal.extensions.setLoading
 import com.example.peoplelisting.internal.extensions.setSuccess
+import com.example.peoplelisting.internal.utilities.getString
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.lang.Exception
+import java.io.IOException
 
 class ListUsersViewModel(private val peopleRepository: PeopleRepository) : ViewModel() {
 
@@ -39,7 +41,11 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) : ViewM
                 }
             } catch (ex: Exception) {
                 Timber.tag("api error").i("exception $ex")
-                _usersResponse.setFailure()
+                val message = when (ex) {
+                    is IOException -> getString(R.string.no_internet)
+                    else -> null
+                }
+                _usersResponse.setFailure(message = message)
             }
         }
     }

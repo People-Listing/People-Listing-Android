@@ -8,11 +8,14 @@
     <dimen name="name_text_size">20sp</dimen>
     <dimen name="age_text_size">16sp</dimen>
     <dimen name="name_age_width">150dp</dimen>
+    <dimen name="snackbar_message_text_size">13sp</dimen>
+    <dimen name="snackbar_corner_radius">15dp</dimen>
     <!--endregion-->
 
 
     <!--region spacing-->
     <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_xsmall">6dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_regular">10dp</dimen>
     <dimen name="spacing_normal">16dp</dimen>

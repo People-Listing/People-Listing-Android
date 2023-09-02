@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.peoplelisting.data.network.NetworkResponse
 import com.example.peoplelisting.data.resource.Resource
 import com.example.peoplelisting.data.resource.ResourceState
+import com.example.peoplelisting.ui.snackbar.SnackBarData
 
 fun <T> MutableLiveData<Resource<T>>.setSuccess(data: T, message: String? = null) =
     postValue(
@@ -21,10 +22,11 @@ fun <T> MutableLiveData<Resource<T>>.setLoading() =
         )
     )
 
-fun <T> MutableLiveData<Resource<T>>.setFailure(data: T? = null) =
+fun <T> MutableLiveData<Resource<T>>.setFailure(data: T? = null, message: String? = null) =
     postValue(
         Resource(
             resourceState = ResourceState.ERROR,
             data = data ?: value?.data,
+            message = message
         )
     )

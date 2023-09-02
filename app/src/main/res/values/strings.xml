@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">PeopleListing</string>
     <string name="list_user_title">Your People</string>
+    <string name="no_internet">Your connection seems down. Please try again.</string>
+    <string name="get_people_error">An error occured while trying to fetch your people</string>
 
     <!--region users listing-->
     <string name="total_count">Total count: %s</string>
+    <string name="empty_result">You have no people yet</string>
+    <string name="try_again">Try again</string>
     <plurals name="age_years_old">
         <item quantity="one">%s year old</item>
         <item quantity="other">%s years old</item>
