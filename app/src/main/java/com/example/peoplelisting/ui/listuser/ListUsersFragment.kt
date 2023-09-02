@@ -3,6 +3,7 @@ package com.example.peoplelisting.ui.listuser
 import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
@@ -18,24 +19,28 @@ import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
 import org.kodein.di.android.x.viewmodel.viewModel
+import timber.log.Timber
 
 class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
     override val screenTitle: String
         get() = getString(R.string.list_user_title)
+    override val showBackButton: Boolean
+        get() = false
     private val binding: ListUsersFragmentBinding by viewBinding(ListUsersFragmentBinding::bind)
-    private val viewModel: ListUsersViewModel by viewModel()
+    private val viewModel: ListUsersViewModel by viewModel(ownerProducer = { requireActivity() })
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
         manageSubscription()
         manageEvents()
-        viewModel.getMyPeople()
+        Timber.tag("getMyPeople").i("onViewCreated")
+        viewModel.getMyPeople(checkIfFetched = true)
 
     }
 
     private fun startLoading() {
         binding.emptyResult.hide()
-        //binding.fab.hide()
+        binding.fab.hide()
         binding.totalCount.hide()
         (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
             PersonDto().apply { isLoading = true }
@@ -57,7 +62,8 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
 
     private fun manageEvents() {
         binding.fab.setOnClickListener {
-            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment())
+            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
+                popUpInclusive = false, popUpTo = R.id.listUsersFragment)
         }
     }
 
@@ -66,6 +72,7 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
             if (it == null) return@observe
             when (it.resourceState) {
                 ResourceState.LOADING -> {
+                    Timber.tag("getMyPeople").i("laoding")
                     startLoading()
                 }
 
@@ -80,11 +87,11 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
                 }
 
                 ResourceState.ERROR -> {
-//                    val message = it.message ?: getString(R.string.get_people_error)
-//                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
-//                        viewModel.getMyPeople()
-//                    }))
-//                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
+                    val message = it.message ?: getString(R.string.get_people_error)
+                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
+                        viewModel.getMyPeople()
+                    }))
+                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
                 }
             }
         }

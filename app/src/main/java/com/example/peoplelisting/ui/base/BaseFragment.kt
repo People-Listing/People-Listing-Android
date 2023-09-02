@@ -1,6 +1,8 @@
 package com.example.peoplelisting.ui.base
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.peoplelisting.internal.managers.NavigationManager
@@ -17,6 +19,7 @@ abstract class BaseFragment : Fragment, DIAware {
     constructor(@LayoutRes layoutRes: Int): super(layoutRes)
     override val di: DI by closestDI()
     abstract val screenTitle: String
+    abstract val showBackButton: Boolean
     private val mainViewModel: MainViewModel by viewModel(ownerProducer = {requireActivity()})
     protected lateinit var navManager: NavigationManager
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +27,11 @@ abstract class BaseFragment : Fragment, DIAware {
         navManager = NavigationManager(findNavController())
         setScreenTitle()
 
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(showBackButton)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun setScreenTitle() {

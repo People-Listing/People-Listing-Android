@@ -20,6 +20,11 @@
     <string name="last_name">Last name</string>
     <string name="profession">Profession</string>
     <string name="age">Age</string>
+    <string name="first_name_hint">E.g. Omar, Emilia</string>
+    <string name="last_name_hint">E.g. Assidi, Clark</string>
+    <string name="profession_hint">E.g. Actor, Software Engineer</string>
+    <string name="age_hint">E.g. 45</string>
+
 
 
 </resources>

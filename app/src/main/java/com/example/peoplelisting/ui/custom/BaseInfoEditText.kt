@@ -24,8 +24,10 @@ class BaseInfoEditText @JvmOverloads constructor(context: Context, private val a
             try {
                 val title = getString(R.styleable.BaseInfoEditText_title) ?: ""
                 val inputType = getInt(R.styleable.BaseInfoEditText_inputType, InputType.TYPE_CLASS_TEXT)
+                val hintText = getString(R.styleable.BaseInfoEditText_hint) ?: ""
                 binding.infoTitle.text = title
                 binding.infoEditText.inputType = inputType
+                binding.infoEditText.hint = hintText
             } finally {
                 recycle()
             }

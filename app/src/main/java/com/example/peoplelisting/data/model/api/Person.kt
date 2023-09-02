@@ -4,8 +4,8 @@ import com.example.peoplelisting.data.model.dto.PersonDto
 import com.google.gson.annotations.SerializedName
 
 data class Person(
-    @SerializedName("id")
-    val id: String? = null,
+    @SerializedName("userId")
+    val userId: String? = null,
     @SerializedName("firstName")
     val firstName: String? = null,
     @SerializedName("lastName")
@@ -24,7 +24,7 @@ data class Person(
             name = fullName,
             age = age ?: -1,
             profession = profession ?: "",
-            id = id
+            id = userId
         )
     }
 }

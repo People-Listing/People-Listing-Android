@@ -23,4 +23,10 @@
     <dimen name="spacing_large">32dp</dimen>
     <dimen name="spacing_larger">48dp</dimen>
     <!--endregion-->
+
+    <!--region users listing-->
+    <dimen name="base_edit_text_text_size">18sp</dimen>
+    <dimen name="base_edit_text_height">60dp</dimen>
+    <!--endregion-->
+
 </resources>

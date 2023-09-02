@@ -10,6 +10,7 @@ import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.databinding.PersonCardLayoutBinding
 import com.example.peoplelisting.databinding.PersonCardShimmeringBinding
 import com.example.peoplelisting.internal.utilities.getQuantityString
+import timber.log.Timber
 
 class PeopleListingAdapter : ListAdapter<PersonDto, ViewHolder>(PeopleDiffCallBack()) {
     inner class PersonViewHolder(binding: PersonCardLayoutBinding) : ViewHolder(binding.root) {
@@ -64,10 +65,12 @@ class PeopleListingAdapter : ListAdapter<PersonDto, ViewHolder>(PeopleDiffCallBa
 
 class PeopleDiffCallBack : DiffUtil.ItemCallback<PersonDto>() {
     override fun areItemsTheSame(oldItem: PersonDto, newItem: PersonDto): Boolean {
+        Timber.tag("areItemsTheSame").i("${oldItem.id == newItem.id}")
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: PersonDto, newItem: PersonDto): Boolean {
+        Timber.tag("areContentsTheSame").i("${oldItem == newItem}")
         return oldItem == newItem
     }
 

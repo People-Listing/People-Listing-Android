@@ -8,6 +8,7 @@ import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.data.resource.Resource
+import com.example.peoplelisting.internal.SingleLiveEvent
 import com.example.peoplelisting.internal.extensions.setFailure
 import com.example.peoplelisting.internal.extensions.setLoading
 import com.example.peoplelisting.internal.extensions.setSuccess
@@ -22,13 +23,17 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) : ViewM
     val usersResponse: LiveData<Resource<List<PersonDto>>>
         get() = _usersResponse
 
+    private var isFetched: Boolean = false
 
-    fun getMyPeople() {
+
+    fun getMyPeople(checkIfFetched: Boolean = false) {
+        if(checkIfFetched && isFetched) return
         viewModelScope.launch {
             _usersResponse.setLoading()
             try {
                 val res = peopleRepository.getUsers()
                 if (res.isSuccessful) {
+                    isFetched = true
                     val persons = res.body()
                     val personsDto = mutableListOf<PersonDto>()
                     persons?.forEach {

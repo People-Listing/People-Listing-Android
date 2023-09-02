@@ -7,6 +7,8 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:textColorHighlight">@color/colorPrimary</item>
+        <item name="android:colorControlActivated">@color/colorPrimary</item>
     </style>
 
     <style name="Theme.PeopleListing" parent="Base.Theme.PeopleListing" />

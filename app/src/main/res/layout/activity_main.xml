@@ -19,6 +19,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:elevation="4dp"
+            tools:title="@string/list_user_title"
+            app:navigationIcon="@drawable/ic_back_arrow"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextAppearance="@style/TitleTextAppearance" />

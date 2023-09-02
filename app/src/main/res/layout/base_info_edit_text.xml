@@ -18,14 +18,15 @@
         android:fontFamily="@font/din_medium"
         android:gravity="center"
         android:textColor="@color/colorSecondary"
-        android:textSize="16sp"
+        android:textSize="@dimen/base_edit_text_text_size"
         tools:text="First name" />
 
     <EditText
         android:id="@+id/infoEditText"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/base_edit_text_height"
         android:layout_gravity="center"
+        android:textColorHint="@color/colorPrimary50"
         android:layout_marginTop="@dimen/spacing_tiny"
         android:background="@drawable/base_info_edit_text_background"
         android:fontFamily="@font/din_bold"
@@ -35,7 +36,7 @@
         android:paddingStart="@dimen/spacing_regular"
         android:paddingEnd="@dimen/spacing_regular"
         android:textColor="@color/colorPrimary"
-        android:textSize="18sp"
+        android:textSize="@dimen/base_edit_text_text_size"
         tools:hint="E.g. Omar, Ali">
 
     </EditText>

@@ -15,22 +15,30 @@
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:inputType="text"
+            app:hint="@string/first_name_hint"
             android:layout_marginTop="@dimen/spacing_large"
             app:title="@string/first_name" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:inputType="text"
+            app:hint="@string/last_name_hint"
             app:title="@string/last_name" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:hint="@string/profession_hint"
+            app:inputType="text"
             app:title="@string/profession" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:hint="@string/age_hint"
+            app:inputType="number"
             app:title="@string/age" />
 
     </LinearLayout>
