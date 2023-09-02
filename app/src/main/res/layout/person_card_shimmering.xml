@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:id="@+id/shimmeringLayout"
-    android:layout_height="100dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:shimmer_duration="1000"
+    android:id="@+id/shimmeringLayout"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:layout_gravity="center"
     android:layout_marginBottom="@dimen/spacing_large"
-    android:layout_gravity="center">
+    android:background="@drawable/person_card_background"
+    app:shimmer_duration="1000">
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/person_card_background" />
+        android:layout_height="match_parent" />
 
 
 </com.facebook.shimmer.ShimmerFrameLayout>

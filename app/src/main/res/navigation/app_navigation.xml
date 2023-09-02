@@ -9,5 +9,14 @@
         tools:layout="@layout/list_users_fragment"
         android:id="@+id/listUsersFragment"
         android:name="com.example.peoplelisting.ui.listuser.ListUsersFragment"
-        android:label="ListUsersFragment" />
+        android:label="ListUsersFragment" >
+        <action
+            android:id="@+id/action_listUsersFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
+    </fragment>
+    <fragment
+        tools:layout="@layout/create_user_fragment"
+        android:id="@+id/createUserFragment"
+        android:name="com.example.peoplelisting.ui.createuser.CreateUserFragment"
+        android:label="CreateUserFragment" />
 </navigation>

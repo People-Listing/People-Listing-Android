@@ -21,5 +21,6 @@
     <dimen name="spacing_normal">16dp</dimen>
     <dimen name="spacing_bigger">22dp</dimen>
     <dimen name="spacing_large">32dp</dimen>
+    <dimen name="spacing_larger">48dp</dimen>
     <!--endregion-->
 </resources>

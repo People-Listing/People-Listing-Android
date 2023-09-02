@@ -28,13 +28,14 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
         manageSubscription()
+        manageEvents()
         viewModel.getMyPeople()
 
     }
 
     private fun startLoading() {
         binding.emptyResult.hide()
-        binding.fab.hide()
+        //binding.fab.hide()
         binding.totalCount.hide()
         (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
             PersonDto().apply { isLoading = true }
@@ -52,6 +53,12 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         binding.people.hide()
         binding.fab.hide()
         binding.emptyResult.show()
+    }
+
+    private fun manageEvents() {
+        binding.fab.setOnClickListener {
+            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment())
+        }
     }
 
     private fun manageSubscription() {
@@ -73,11 +80,11 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
                 }
 
                 ResourceState.ERROR -> {
-                    val message = it.message ?: getString(R.string.get_people_error)
-                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
-                        viewModel.getMyPeople()
-                    }))
-                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
+//                    val message = it.message ?: getString(R.string.get_people_error)
+//                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
+//                        viewModel.getMyPeople()
+//                    }))
+//                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
                 }
             }
         }
