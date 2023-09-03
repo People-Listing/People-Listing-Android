@@ -24,6 +24,9 @@
     <string name="last_name_hint">E.g. Assidi, Clark</string>
     <string name="profession_hint">E.g. Actor, Software Engineer</string>
     <string name="age_hint">E.g. 45</string>
+    <string name="add_person">Add person</string>
+    <string name="create_people_error">An error occurred while adding this person.</string>
+
 
 
 

@@ -25,6 +25,13 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) : ViewM
 
     private var isFetched: Boolean = false
 
+    fun setFreshlyCreatedUser(personDto: PersonDto) {
+        val current = _usersResponse.value?.data?.toMutableList() ?: mutableListOf()
+        current.add(0,personDto)
+        _usersResponse.setSuccess(current)
+    }
+
+
 
     fun getMyPeople(checkIfFetched: Boolean = false) {
         if(checkIfFetched && isFetched) return

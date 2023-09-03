@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.example.peoplelisting.R
 import com.example.peoplelisting.databinding.BaseInfoEditTextBinding
+import com.jakewharton.rxbinding4.InitialValueObservable
+import com.jakewharton.rxbinding4.widget.textChanges
 
 class BaseInfoEditText @JvmOverloads constructor(context: Context, private val attrs: AttributeSet) : LinearLayout
     (context, attrs) {
@@ -33,6 +35,10 @@ class BaseInfoEditText @JvmOverloads constructor(context: Context, private val a
             }
 
         }
+    }
+
+    fun textChanges(): InitialValueObservable<CharSequence> {
+       return binding.infoEditText.textChanges()
     }
 
 }

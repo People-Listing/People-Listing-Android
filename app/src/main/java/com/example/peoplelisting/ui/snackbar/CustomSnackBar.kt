@@ -81,6 +81,10 @@ class CustomSnackBar(lifecycleOwner: LifecycleOwner): DefaultLifecycleObserver {
                     backgroundTintList = getColorStateList(buttonData.backgroundColor)
                 }
             } ?: kotlin.run {
+                binding.closeButton.show()
+                binding.closeButton.setOnClickListener {
+                    snackBar.dismiss()
+                }
                 binding.button.hide()
             }
             return this

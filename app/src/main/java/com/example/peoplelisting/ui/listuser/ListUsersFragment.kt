@@ -3,7 +3,9 @@ package com.example.peoplelisting.ui.listuser
 import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
@@ -15,6 +17,7 @@ import com.example.peoplelisting.internal.extensions.show
 import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.internal.utilities.getFont
 import com.example.peoplelisting.ui.base.BaseFragment
+import com.example.peoplelisting.ui.main.MainViewModel
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
@@ -27,6 +30,7 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         get() = getString(R.string.list_user_title)
     override val showBackButton: Boolean
         get() = false
+
     private val binding: ListUsersFragmentBinding by viewBinding(ListUsersFragmentBinding::bind)
     private val viewModel: ListUsersViewModel by viewModel(ownerProducer = { requireActivity() })
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,12 +45,14 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
     }
 
     private fun startLoading() {
-        binding.emptyResult.hide()
-        binding.fab.hide()
-        binding.totalCount.hide()
-        (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
-            PersonDto().apply { isLoading = true }
-        })
+        if(!binding.swipeRefresh.isRefreshing) {
+            binding.emptyResult.hide()
+            binding.fab.hide()
+            binding.totalCount.hide()
+            (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
+                PersonDto().apply { isLoading = true }
+            })
+        }
     }
 
     private fun stopLoading() {
@@ -61,13 +67,22 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
     private fun setEmptyResult() {
         binding.totalCount.hide()
         binding.people.hide()
-        binding.fab.hide()
         binding.emptyResult.show()
+        binding.fab.show()
+        if(binding.swipeRefresh.isRefreshing) {
+            binding.swipeRefresh.isRefreshing = false
+        }
     }
 
     private fun manageEvents() {
         binding.fab.setOnClickListener {
-            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment())
+            navManager.navigateToDirection(
+                ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
+                enterAnim = R.anim.enter_from_right,
+                exitAnim =  R.anim.exit_to_left,
+                popEnterAnim = R.anim.enter_from_left,
+                popExitAnim = R.anim.exit_to_right
+            )
         }
         binding.swipeRefresh.refreshes().subscribe{
             viewModel.getMyPeople()
@@ -79,7 +94,6 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
             if (it == null) return@observe
             when (it.resourceState) {
                 ResourceState.LOADING -> {
-                    Timber.tag("getMyPeople").i("laoding")
                     startLoading()
                 }
 

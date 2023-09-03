@@ -25,12 +25,12 @@ abstract class BaseFragment : Fragment, DIAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navManager = NavigationManager(findNavController())
-        setScreenTitle()
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(showBackButton)
+        setScreenTitle()
         super.onViewCreated(view, savedInstanceState)
     }
 

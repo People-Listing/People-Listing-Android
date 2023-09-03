@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
+            android:id="@+id/etFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -21,6 +22,7 @@
             app:title="@string/first_name" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
+            android:id="@+id/etLastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:inputType="text"
@@ -28,6 +30,7 @@
             app:title="@string/last_name" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
+            android:id="@+id/etProfession"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hint="@string/profession_hint"
@@ -35,11 +38,17 @@
             app:title="@string/profession" />
 
         <com.example.peoplelisting.ui.custom.BaseInfoEditText
+            android:id="@+id/etAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hint="@string/age_hint"
             app:inputType="number"
             app:title="@string/age" />
+
+        <include
+            android:id="@+id/createButton"
+            layout="@layout/create_people_button"
+            />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

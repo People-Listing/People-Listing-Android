@@ -57,6 +57,12 @@ class PeopleListingAdapter : ListAdapter<PersonDto, ViewHolder>(PeopleDiffCallBa
         return if (getItem(position).isLoading) LOADING else OTHER
     }
 
+    fun addPerson(person: PersonDto) {
+        val current = currentList.map { it.copy() }.toMutableList()
+        current.add(person)
+        submitList(current)
+    }
+
     companion object {
         const val LOADING = 0
         const val OTHER = 1
