@@ -4,6 +4,7 @@
         <shape>
             <solid android:color="@color/colorSecondary"/>
             <corners android:radius="16dp"/>
+            <stroke android:color="@color/colorPrimary" android:width="3dp"/>
         </shape>
     </item>
 </layer-list>

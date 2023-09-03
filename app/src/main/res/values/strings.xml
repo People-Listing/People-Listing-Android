@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PeopleListing</string>
-    <string name="no_internet">Your connection seems down. Please try again.</string>
-    <string name="get_people_error">An error occured while trying to fetch your people</string>
+    <string name="no_internet">Your connection seems down.</string>
+    <string name="get_people_error">An error occurred while fetching your people.</string>
 
     <!--region users listing-->
     <string name="list_user_title">Your People</string>

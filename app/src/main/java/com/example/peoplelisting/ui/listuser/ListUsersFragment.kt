@@ -18,6 +18,7 @@ import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
+import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
 import org.kodein.di.android.x.viewmodel.viewModel
 import timber.log.Timber
 
@@ -34,7 +35,8 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         manageSubscription()
         manageEvents()
         Timber.tag("getMyPeople").i("onViewCreated")
-        viewModel.getMyPeople(checkIfFetched = true)
+        if(savedInstanceState == null)
+            viewModel.getMyPeople(checkIfFetched = true)
 
     }
 
@@ -51,6 +53,9 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         binding.emptyResult.hide()
         binding.fab.show()
         binding.totalCount.show()
+        if(binding.swipeRefresh.isRefreshing) {
+            binding.swipeRefresh.isRefreshing = false
+        }
     }
 
     private fun setEmptyResult() {
@@ -62,9 +67,11 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
 
     private fun manageEvents() {
         binding.fab.setOnClickListener {
-            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
-                popUpInclusive = false, popUpTo = R.id.listUsersFragment)
+            navManager.navigateToDirection(ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment())
         }
+        binding.swipeRefresh.refreshes().subscribe{
+            viewModel.getMyPeople()
+        }.isDisposed
     }
 
     private fun manageSubscription() {
@@ -87,6 +94,9 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
                 }
 
                 ResourceState.ERROR -> {
+                    if(binding.swipeRefresh.isRefreshing) {
+                        binding.swipeRefresh.isRefreshing = false
+                    }
                     val message = it.message ?: getString(R.string.get_people_error)
                     val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
                         viewModel.getMyPeople()
