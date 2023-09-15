@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit
 
 object Retrofit {
 
-    private const val API_TIME_OUT = 60L
+    const val API_TIME_OUT = 60L
 
-    private const val BASE_URL = "http://10.0.0.13:3002/"
-    private val loggingInterceptor = HttpLoggingInterceptor { message ->
+    const val BASE_URL = "http://10.0.0.10:3002/"
+    val loggingInterceptor = HttpLoggingInterceptor { message ->
         Timber.d(message)
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.resource.ResourceState
 import com.example.peoplelisting.databinding.CreateUserFragmentBinding
@@ -18,8 +19,11 @@ import com.example.peoplelisting.ui.main.MainViewModel
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
+import dagger.hilt.android.AndroidEntryPoint
 import org.kodein.di.android.x.viewmodel.viewModel
 
+
+@AndroidEntryPoint
 class CreateUserFragment : BaseFragment(R.layout.create_user_fragment) {
     override val screenTitle: String
         get() = getString(R.string.create_user_title)
@@ -27,7 +31,7 @@ class CreateUserFragment : BaseFragment(R.layout.create_user_fragment) {
         get() = true
 
     private val listingViewModel: ListUsersViewModel by activityViewModels()
-    private val viewModel: CreateUserViewModel by viewModel()
+    private val viewModel: CreateUserViewModel by viewModels()
     private val binding: CreateUserFragmentBinding by viewBinding(CreateUserFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

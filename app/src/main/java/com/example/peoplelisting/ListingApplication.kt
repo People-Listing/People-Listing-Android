@@ -5,17 +5,18 @@ import android.content.Context
 import com.example.peoplelisting.data.di.repoModule
 import com.example.peoplelisting.data.di.serviceModule
 import com.example.peoplelisting.data.di.viewModelModule
+import dagger.hilt.android.HiltAndroidApp
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import timber.log.Timber
 
-class ListingApplication: Application(), DIAware {
-
-    override val di: DI = DI.lazy {
-        import(viewModelModule)
-        import(serviceModule)
-        import(repoModule)
-    }
+@HiltAndroidApp
+class ListingApplication: Application()/*, DIAware*/ {
+//    override val di: DI = DI.lazy {
+//        import(viewModelModule)
+//        import(serviceModule)
+//        import(repoModule)
+//    }
 
     companion object {
         lateinit var context: ListingApplication

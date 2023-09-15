@@ -13,11 +13,14 @@ import com.example.peoplelisting.internal.extensions.setFailure
 import com.example.peoplelisting.internal.extensions.setLoading
 import com.example.peoplelisting.internal.extensions.setSuccess
 import com.example.peoplelisting.internal.utilities.getString
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
+import javax.inject.Inject
 
-class CreateUserViewModel(private val peopleRepository: PeopleRepository) : ViewModel() {
+@HiltViewModel
+class CreateUserViewModel @Inject constructor(private val peopleRepository: PeopleRepository) : ViewModel() {
     private val _createUserResponse = MutableLiveData<Resource<PersonDto>>()
     val createUserResponse: LiveData<Resource<PersonDto>>
         get() = _createUserResponse

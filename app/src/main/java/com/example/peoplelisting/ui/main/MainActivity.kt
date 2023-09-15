@@ -10,16 +10,18 @@ import com.example.peoplelisting.R
 import com.example.peoplelisting.databinding.ActivityMainBinding
 import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.internal.managers.NavigationManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.android.x.viewmodel.viewModel
 import org.kodein.di.provider
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), DIAware {
     override val di: DI by closestDI()
     private val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::inflate)
-    private val viewModel: MainViewModel by viewModel()
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var navigationManager: NavigationManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

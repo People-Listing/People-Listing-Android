@@ -3,9 +3,7 @@ package com.example.peoplelisting.ui.listuser
 import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
-import android.view.animation.AnimationUtils
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
@@ -17,14 +15,16 @@ import com.example.peoplelisting.internal.extensions.show
 import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.internal.utilities.getFont
 import com.example.peoplelisting.ui.base.BaseFragment
-import com.example.peoplelisting.ui.main.MainViewModel
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
+import dagger.hilt.android.AndroidEntryPoint
 import org.kodein.di.android.x.viewmodel.viewModel
 import timber.log.Timber
 
+
+@AndroidEntryPoint
 class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
     override val screenTitle: String
         get() = getString(R.string.list_user_title)
@@ -32,7 +32,7 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         get() = false
 
     private val binding: ListUsersFragmentBinding by viewBinding(ListUsersFragmentBinding::bind)
-    private val viewModel: ListUsersViewModel by viewModel(ownerProducer = { requireActivity() })
+    private val viewModel: ListUsersViewModel by viewModels(ownerProducer =  {requireActivity()})
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
