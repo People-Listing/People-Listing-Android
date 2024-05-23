@@ -1,4 +1,5 @@
 [versions]
+hiltNavigationCompose = "1.2.0"
 retrofit_version = "2.10.0"
 coroutine_version = "1.7.3"
 coroutine_adapter_version = "0.9.2"
@@ -18,8 +19,22 @@ espresso_core = "3.5.1"
 loggin_interceptor = "5.0.0-alpha.7"
 agp = "8.3.2"
 kotlin = "1.9.22"
+activityCompose = "1.9.0"
+composeBom = "2024.05.00"
+compose-livedata = "1.6.7"
+viewmodel-lifecycle = "2.7.0"
 
 [libraries]
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core_ktx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "app_compat" }
 android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -44,7 +59,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit_ext" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso_core" }
 navigation-safe-args-gradle-plugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "nav_version" }
-
+compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose-livedata" }
+viewmodel-lifecycle = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel-lifecycle"}
 
 
 

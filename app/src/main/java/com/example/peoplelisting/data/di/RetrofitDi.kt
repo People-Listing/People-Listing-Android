@@ -9,7 +9,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -20,9 +22,20 @@ class RetrofitDi {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor {
+            Timber.d(it)
+        }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(Retrofit.loggingInterceptor)
+            .addInterceptor(loggingInterceptor)
             .callTimeout(Retrofit.API_TIME_OUT, TimeUnit.SECONDS)
             .build()
     }

@@ -1,45 +1,43 @@
 package com.example.peoplelisting.ui.listuser
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.repository.PeopleRepository
-import com.example.peoplelisting.data.resource.Resource
-import com.example.peoplelisting.internal.SingleLiveEvent
-import com.example.peoplelisting.internal.extensions.setFailure
-import com.example.peoplelisting.internal.extensions.setLoading
-import com.example.peoplelisting.internal.extensions.setSuccess
 import com.example.peoplelisting.internal.utilities.getString
+import com.example.peoplelisting.ui.screens.base.BaseViewModel
+import com.example.peoplelisting.ui.screens.base.ErrorState
+import com.example.peoplelisting.ui.screens.base.ViewIntent
+import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
+import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class ListUsersViewModel @Inject constructor(private val peopleRepository: PeopleRepository) : ViewModel() {
-
-    private val _usersResponse = MutableLiveData<Resource<List<PersonDto>>>()
-    val usersResponse: LiveData<Resource<List<PersonDto>>>
-        get() = _usersResponse
-
+class ListUsersViewModel @Inject constructor(private val peopleRepository: PeopleRepository) :
+    BaseViewModel<PeopleListingViewIntent, PeopleListingUiState>() {
     private var isFetched: Boolean = false
-
     fun setFreshlyCreatedUser(personDto: PersonDto) {
-        val current = _usersResponse.value?.data?.toMutableList() ?: mutableListOf()
-        current.add(0,personDto)
-        _usersResponse.setSuccess(current)
+        val current = (_uiState.value as? PeopleListingUiState.NORMAL)?.people?.toMutableList() ?: mutableListOf()
+        current.add(0, personDto)
+        _uiState.value = PeopleListingUiState.NORMAL(current)
     }
 
 
-
-    fun getMyPeople(checkIfFetched: Boolean = false) {
-        if(checkIfFetched && isFetched) return
+    private fun getMyPeople(checkIfFetched: Boolean = false, isRefreshing: Boolean = false) {
+        if (checkIfFetched && isFetched) return
         viewModelScope.launch {
-            _usersResponse.setLoading()
+            if (isRefreshing) {
+                val current = (_uiState.value as PeopleListingUiState.NORMAL).people
+                Timber.tag("REFRESH").i("setting the state to refreshing")
+                _uiState.value = PeopleListingUiState.REFRESHING(current)
+            } else {
+                _uiState.value = PeopleListingUiState.LOADING
+            }
             try {
                 val res = peopleRepository.getUsers()
                 if (res.isSuccessful) {
@@ -49,10 +47,11 @@ class ListUsersViewModel @Inject constructor(private val peopleRepository: Peopl
                     persons?.forEach {
                         personsDto.add(it.toPersonDto())
                     }
-                    _usersResponse.setSuccess(personsDto)
+                    Timber.tag("REFRESH").i("setting the state to NORMAL")
+                    _uiState.value = PeopleListingUiState.NORMAL(personsDto)
                 } else {
                     Timber.tag("api error").i("${res.errorBody()?.string()} ${res.body()}")
-                    _usersResponse.setFailure()
+                    _errorState.value = ErrorState()
                 }
             } catch (ex: Exception) {
                 Timber.tag("api error").i("exception $ex")
@@ -60,8 +59,15 @@ class ListUsersViewModel @Inject constructor(private val peopleRepository: Peopl
                     is IOException -> getString(R.string.no_internet)
                     else -> null
                 }
-                _usersResponse.setFailure(message = message)
+                _errorState.value = ErrorState(message)
             }
+        }
+    }
+
+    override fun handleIntent(intent: ViewIntent) {
+        when (intent) {
+            PeopleListingViewIntent.LoadData -> getMyPeople(checkIfFetched = true)
+            PeopleListingViewIntent.RefreshData -> getMyPeople(checkIfFetched = false, isRefreshing = true)
         }
     }
 }

@@ -1,141 +1,84 @@
 package com.example.peoplelisting.ui.listuser
 
 import android.os.Bundle
-import android.text.SpannableString
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.view.ViewGroup
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.peoplelisting.R
-import com.example.peoplelisting.data.model.dto.PersonDto
-import com.example.peoplelisting.data.resource.ResourceState
-import com.example.peoplelisting.databinding.ListUsersFragmentBinding
-import com.example.peoplelisting.internal.CustomTypefaceSpan
-import com.example.peoplelisting.internal.extensions.hide
-import com.example.peoplelisting.internal.extensions.show
-import com.example.peoplelisting.internal.extensions.viewBinding
-import com.example.peoplelisting.internal.utilities.getFont
 import com.example.peoplelisting.ui.base.BaseFragment
-import com.example.peoplelisting.ui.snackbar.CustomSnackBar
-import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
-import com.example.peoplelisting.ui.snackbar.SnackBarData
-import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
+import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
+import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
+import com.example.peoplelisting.ui.screens.listpeople.view.ListUserScreen
+import com.example.peoplelisting.ui.screens.listpeople.view.ShimmeringList
 import dagger.hilt.android.AndroidEntryPoint
-import org.kodein.di.android.x.viewmodel.viewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
 @AndroidEntryPoint
-class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
+class ListUsersFragment : BaseFragment() {
     override val screenTitle: String
         get() = getString(R.string.list_user_title)
     override val showBackButton: Boolean
         get() = false
 
-    private val binding: ListUsersFragmentBinding by viewBinding(ListUsersFragmentBinding::bind)
-    private val viewModel: ListUsersViewModel by viewModels(ownerProducer =  {requireActivity()})
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setUpRecyclerView()
-        manageSubscription()
-        manageEvents()
-        Timber.tag("getMyPeople").i("onViewCreated")
-        if(savedInstanceState == null)
-            viewModel.getMyPeople(checkIfFetched = true)
-
-    }
-
-    private fun startLoading() {
-        if(!binding.swipeRefresh.isRefreshing) {
-            binding.emptyResult.hide()
-            binding.fab.hide()
-            binding.totalCount.hide()
-            (binding.people.adapter as PeopleListingAdapter).submitList(List(5) {
-                PersonDto().apply { isLoading = true }
-            })
-        }
-    }
-
-    private fun stopLoading() {
-        binding.emptyResult.hide()
-        binding.fab.show()
-        binding.totalCount.show()
-        if(binding.swipeRefresh.isRefreshing) {
-            binding.swipeRefresh.isRefreshing = false
-        }
-    }
-
-    private fun setEmptyResult() {
-        binding.totalCount.hide()
-        binding.people.hide()
-        binding.emptyResult.show()
-        binding.fab.show()
-        if(binding.swipeRefresh.isRefreshing) {
-            binding.swipeRefresh.isRefreshing = false
-        }
-    }
-
-    private fun manageEvents() {
-        binding.fab.setOnClickListener {
-            navManager.navigateToDirection(
-                ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
-                enterAnim = R.anim.enter_from_right,
-                exitAnim =  R.anim.exit_to_left,
-                popEnterAnim = R.anim.enter_from_left,
-                popExitAnim = R.anim.exit_to_right
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val composeView = ComposeView(requireContext())
+        composeView.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
-        }
-        binding.swipeRefresh.refreshes().subscribe{
-            viewModel.getMyPeople()
-        }.isDisposed
-    }
-
-    private fun manageSubscription() {
-        viewModel.usersResponse.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
-            when (it.resourceState) {
-                ResourceState.LOADING -> {
-                    startLoading()
+            setContent {
+                val scope = rememberCoroutineScope()
+                val vm: ListUsersViewModel = hiltViewModel(requireActivity())
+                LaunchedEffect(key1 = Unit) {
+                    vm.handleIntent(PeopleListingViewIntent.LoadData)
                 }
-
-                ResourceState.SUCCESS -> {
-                    if(it.data?.isEmpty() == true) {
-                        setEmptyResult()
-                    } else {
-                        stopLoading()
-                        (binding.people.adapter as PeopleListingAdapter).submitList(it.data)
-                        setTotalCount(it.data?.count() ?: 0)
+                val state = vm.uiState.observeAsState(initial = PeopleListingUiState.LOADING).value
+                Timber.tag("REFRESH").i("state: $state")
+                when (state) {
+                    PeopleListingUiState.LOADING -> ShimmeringList()
+                    else -> {
+                        Timber.tag("REFRESH").i("state: $state")
+                        val people = when (state) {
+                            is PeopleListingUiState.REFRESHING -> state.people
+                            is PeopleListingUiState.NORMAL -> state.people
+                            else -> listOf()
+                        }
+                        ListUserScreen(
+                            people = people,
+                            isRefreshing = state is PeopleListingUiState.REFRESHING,
+                            onRefresh = {
+                                if (state is PeopleListingUiState.NORMAL) {
+                                    scope.launch {
+                                        Timber.tag("REFRESH").i("refreshing api")
+                                        vm.handleIntent(PeopleListingViewIntent.RefreshData)
+                                    }
+                                }
+                            },
+                            onClick = ::navigateToAddPersonScreen
+                        )
                     }
-                }
-
-                ResourceState.ERROR -> {
-                    if(binding.swipeRefresh.isRefreshing) {
-                        binding.swipeRefresh.isRefreshing = false
-                    }
-                    val message = it.message ?: getString(R.string.get_people_error)
-                    val snackBarData = SnackBarData(message, snackBarButtonData =  SnackBarButtonData(listener = {
-                        viewModel.getMyPeople()
-                    }))
-                    CustomSnackBar(viewLifecycleOwner).showSnackBar(requireView(), snackBarData)
                 }
             }
         }
+        return composeView
     }
 
-    private fun setUpRecyclerView() {
-        binding.people.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = PeopleListingAdapter()
-        binding.people.adapter = adapter
-    }
-
-    private fun setTotalCount(totalCount: Int) {
-        val dinBold = CustomTypefaceSpan("din", getFont(R.font.din_bold)!!)
-        val completeText = getString(R.string.total_count, totalCount.toString())
-        val toBeBold = totalCount.toString()
-        val spannableString = SpannableString(completeText)
-        val start = completeText.indexOf(toBeBold)
-        val end = start + toBeBold.length
-        spannableString.setSpan(dinBold, start, end, SpannableString.SPAN_INCLUSIVE_INCLUSIVE)
-        binding.totalCount.text = spannableString
-
+    private fun navigateToAddPersonScreen() {
+        navManager.navigateToDirection(
+            ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
+            enterAnim = R.anim.enter_from_right,
+            exitAnim = R.anim.exit_to_left,
+            popEnterAnim = R.anim.enter_from_left,
+            popExitAnim = R.anim.exit_to_right
+        )
     }
 }

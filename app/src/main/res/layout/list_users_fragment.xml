@@ -28,25 +28,19 @@
         android:textSize="30sp"
         android:visibility="gone" />
 
-    <TextView
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/totalCount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:fontFamily="@font/din_regular"
-        android:textColor="@color/colorSecondary"
-        android:textSize="@dimen/totalCountTextSize"
-        tools:text="Total count: 15" />
+        android:layout_alignParentEnd="true" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/people"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/totalCount"
-        android:layout_marginTop="@dimen/spacing_normal"
-        tools:listitem="@layout/person_card_layout" />
+        android:layout_below="@id/totalCount" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

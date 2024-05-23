@@ -47,5 +47,5 @@
         android:textColor="@color/black"
         android:textSize="@dimen/profession_text_size"
         android:textStyle="italic"
-        tools:text="Software Engineer" />
+        tools:text="Software Engineering" />
 </androidx.appcompat.widget.LinearLayoutCompat>
