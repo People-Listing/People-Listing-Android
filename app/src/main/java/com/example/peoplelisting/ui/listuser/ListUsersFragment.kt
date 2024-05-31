@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.peoplelisting.R
 import com.example.peoplelisting.ui.base.BaseFragment
@@ -16,10 +20,12 @@ import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewI
 import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
 import com.example.peoplelisting.ui.screens.listpeople.view.ListUserScreen
 import com.example.peoplelisting.ui.screens.listpeople.view.ShimmeringList
+import com.example.peoplelisting.ui.snackbar.ComposeSnackBar
+import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
+import com.example.peoplelisting.ui.snackbar.SnackBarData
+import com.example.peoplelisting.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 
 @AndroidEntryPoint
@@ -41,30 +47,56 @@ class ListUsersFragment : BaseFragment() {
                 LaunchedEffect(key1 = Unit) {
                     vm.handleIntent(PeopleListingViewIntent.LoadData)
                 }
+                val errorState = vm.errorState.observeAsState(initial = null).value
                 val state = vm.uiState.observeAsState(initial = PeopleListingUiState.LOADING).value
-                Timber.tag("REFRESH").i("state: $state")
-                when (state) {
-                    PeopleListingUiState.LOADING -> ShimmeringList()
-                    else -> {
-                        Timber.tag("REFRESH").i("state: $state")
-                        val people = when (state) {
-                            is PeopleListingUiState.REFRESHING -> state.people
-                            is PeopleListingUiState.NORMAL -> state.people
-                            else -> listOf()
+                AppTheme {
+                    Box {
+                        when (state) {
+                            PeopleListingUiState.LOADING -> ShimmeringList()
+                            is PeopleListingUiState.REFRESHING -> {
+                                val people = state.people
+                                ListUserScreen(
+                                    people = people,
+                                    isRefreshing = true,
+                                    onRefresh = {},
+                                    onClick = ::navigateToAddPersonScreen
+                                )
+                            }
+
+                            is PeopleListingUiState.NORMAL -> {
+                                val people = state.people
+                                ListUserScreen(
+                                    people = people,
+                                    isRefreshing = false,
+                                    onRefresh = {
+                                        scope.launch {
+                                            vm.handleIntent(PeopleListingViewIntent.RefreshData)
+                                        }
+                                    },
+                                    onClick = ::navigateToAddPersonScreen
+                                )
+                            }
                         }
-                        ListUserScreen(
-                            people = people,
-                            isRefreshing = state is PeopleListingUiState.REFRESHING,
-                            onRefresh = {
-                                if (state is PeopleListingUiState.NORMAL) {
-                                    scope.launch {
-                                        Timber.tag("REFRESH").i("refreshing api")
-                                        vm.handleIntent(PeopleListingViewIntent.RefreshData)
-                                    }
-                                }
-                            },
-                            onClick = ::navigateToAddPersonScreen
-                        )
+                        errorState?.apply {
+                            val duration = if (state is PeopleListingUiState.NORMAL) {
+                                10_000L
+                            } else {
+                                null
+                            }
+                            ComposeSnackBar(
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                                snackBarData = SnackBarData(
+                                    stringResource(id = this.errorMessage), duration = duration, snackBarButtonData =
+                                    SnackBarButtonData(listener = {
+                                        if (state is PeopleListingUiState.NORMAL) {
+                                            vm.handleIntent(PeopleListingViewIntent.RefreshData)
+                                        } else {
+                                            vm.handleIntent(PeopleListingViewIntent.LoadData)
+                                        }
+                                    })
+                                )
+                            )
+                        }
                     }
                 }
             }

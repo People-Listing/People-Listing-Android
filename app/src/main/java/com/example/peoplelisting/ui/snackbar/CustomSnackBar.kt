@@ -30,7 +30,7 @@ class CustomSnackBar(lifecycleOwner: LifecycleOwner): DefaultLifecycleObserver {
 
     fun showSnackBar(view: View, data: SnackBarData) {
         val snack = Builder()
-            .setView(view, data.duration)
+            .setView(view, data.duration?.toInt() ?: 0)
             .setMessage(data.message)
             .setColor(data.color)
             .setButtonData(data.snackBarButtonData)

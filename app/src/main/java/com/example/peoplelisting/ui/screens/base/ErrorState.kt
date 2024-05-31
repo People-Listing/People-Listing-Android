@@ -1,3 +1,5 @@
 package com.example.peoplelisting.ui.screens.base
 
-data class ErrorState (val errorMessage: String? = null)
+import androidx.annotation.StringRes
+
+data class ErrorState(@StringRes val errorMessage: Int)

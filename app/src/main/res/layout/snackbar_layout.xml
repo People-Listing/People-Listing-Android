@@ -44,7 +44,7 @@
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/closeButton"
             android:layout_weight="0.4"
-            android:visibility="gone"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_close"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"

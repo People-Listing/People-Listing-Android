@@ -33,11 +33,11 @@ class ListUsersViewModel @Inject constructor(private val peopleRepository: Peopl
         viewModelScope.launch {
             if (isRefreshing) {
                 val current = (_uiState.value as PeopleListingUiState.NORMAL).people
-                Timber.tag("REFRESH").i("setting the state to refreshing")
                 _uiState.value = PeopleListingUiState.REFRESHING(current)
             } else {
                 _uiState.value = PeopleListingUiState.LOADING
             }
+            _errorState.value = null
             try {
                 val res = peopleRepository.getUsers()
                 if (res.isSuccessful) {
@@ -47,17 +47,23 @@ class ListUsersViewModel @Inject constructor(private val peopleRepository: Peopl
                     persons?.forEach {
                         personsDto.add(it.toPersonDto())
                     }
-                    Timber.tag("REFRESH").i("setting the state to NORMAL")
                     _uiState.value = PeopleListingUiState.NORMAL(personsDto)
+                    _errorState.value = null
                 } else {
-                    Timber.tag("api error").i("${res.errorBody()?.string()} ${res.body()}")
-                    _errorState.value = ErrorState()
+                    if(isRefreshing){
+                        val current = (_uiState.value as PeopleListingUiState.REFRESHING).people
+                        _uiState.value = PeopleListingUiState.NORMAL(current)
+                    }
+                    _errorState.value = ErrorState(R.string.get_people_error)
                 }
             } catch (ex: Exception) {
-                Timber.tag("api error").i("exception $ex")
                 val message = when (ex) {
-                    is IOException -> getString(R.string.no_internet)
-                    else -> null
+                    is IOException -> R.string.no_internet
+                    else -> R.string.get_people_error
+                }
+                if(isRefreshing){
+                    val current = (_uiState.value as PeopleListingUiState.REFRESHING).people
+                    _uiState.value = PeopleListingUiState.NORMAL(current) // turn off refreshing
                 }
                 _errorState.value = ErrorState(message)
             }

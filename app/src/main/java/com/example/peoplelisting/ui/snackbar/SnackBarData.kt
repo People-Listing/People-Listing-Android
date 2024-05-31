@@ -7,7 +7,7 @@ import com.example.peoplelisting.internal.utilities.getString
 
 class SnackBarData(
     val message: String,
-    val duration: Int = 10000,
+    val duration: Long? = null,
     @ColorRes val color: Int = R.color.redColor,
     val snackBarButtonData: SnackBarButtonData? = null
 ) {
