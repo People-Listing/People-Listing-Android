@@ -1,5 +1,7 @@
 package com.example.peoplelisting.ui.createuser
 
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +15,8 @@ import com.example.peoplelisting.internal.extensions.setFailure
 import com.example.peoplelisting.internal.extensions.setLoading
 import com.example.peoplelisting.internal.extensions.setSuccess
 import com.example.peoplelisting.internal.utilities.getString
+import com.example.peoplelisting.ui.screens.createpeople.model.EntryType
+import com.example.peoplelisting.ui.screens.createpeople.model.FormEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -37,34 +41,51 @@ class CreateUserViewModel @Inject constructor(private val peopleRepository: Peop
     val enableCreate: LiveData<Boolean>
         get() = _enableCreate
 
+    private val _entriess = getEntries().toMutableStateList()
+    val entriess: List<FormEntry>
+        get() = _entriess
+
+    private fun getEntries() = listOf(
+        FormEntry(hint = R.string.first_name_hint, title = R.string.first_name, entryType = EntryType.FirstName),
+        FormEntry(hint = R.string.last_name_hint, title = R.string.last_name, entryType = EntryType.LastName),
+        FormEntry(hint = R.string.age_hint, title = R.string.age, entryType = EntryType.Age, keyboardType = KeyboardType.Number),
+        FormEntry(
+            hint = R.string.profession_hint, title = R.string.profession, entryType = EntryType.Profession
+        )
+    )
+
     init {
-        _enableCreate.addSource(_firstName){shouldEnableCreate()}
-        _enableCreate.addSource(_lastName){shouldEnableCreate()}
-        _enableCreate.addSource(_age){shouldEnableCreate()}
-        _enableCreate.addSource(_profession){shouldEnableCreate()}
+        _enableCreate.addSource(_firstName) { shouldEnableCreate() }
+        _enableCreate.addSource(_lastName) { shouldEnableCreate() }
+        _enableCreate.addSource(_age) { shouldEnableCreate() }
+        _enableCreate.addSource(_profession) { shouldEnableCreate() }
     }
 
 
     private fun shouldEnableCreate() {
-       _enableCreate.value =  !_firstName.value.isNullOrEmpty()
+        _enableCreate.value = !_firstName.value.isNullOrEmpty()
                 && !_lastName.value.isNullOrEmpty()
                 && !_age.value.isNullOrEmpty()
                 && !_profession.value.isNullOrEmpty()
     }
 
     fun setFirstName(firstName: String) {
+        entriess.firstOrNull { it.entryType == EntryType.FirstName }?.valueState = firstName
         _firstName.value = firstName
     }
 
     fun setLastName(lastName: String) {
+        entriess.firstOrNull { it.entryType == EntryType.LastName }?.valueState = lastName
         _lastName.value = lastName
     }
 
     fun setAge(age: String) {
+        entriess.firstOrNull { it.entryType == EntryType.Age }?.valueState = age
         _age.value = age
     }
 
     fun setProfession(profession: String) {
+        entriess.firstOrNull { it.entryType == EntryType.Profession }?.valueState = profession
         _profession.value = profession
     }
 

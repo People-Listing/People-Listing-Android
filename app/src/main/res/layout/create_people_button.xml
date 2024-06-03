@@ -5,6 +5,7 @@
     android:minHeight="60dp"
     android:layout_gravity="center"
     android:gravity="center"
+    android:alpha="0.5"
     android:background="@drawable/create_people_button_background"
     android:layout_marginStart="@dimen/spacing_large"
     android:layout_marginEnd="@dimen/spacing_large"

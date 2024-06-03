@@ -3,6 +3,7 @@ package com.example.peoplelisting.ui.createuser
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.peoplelisting.R
@@ -15,12 +16,13 @@ import com.example.peoplelisting.internal.extensions.stopIgnoringTouchEvents
 import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.listuser.ListUsersViewModel
-import com.example.peoplelisting.ui.main.MainViewModel
+import com.example.peoplelisting.ui.screens.createpeople.model.EntryType
+import com.example.peoplelisting.ui.screens.createpeople.model.FormEntry
+import com.example.peoplelisting.ui.screens.createpeople.view.PersonForm
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
-import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
+import com.example.peoplelisting.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import org.kodein.di.android.x.viewmodel.viewModel
 
 
 @AndroidEntryPoint
@@ -38,25 +40,26 @@ class CreateUserFragment : BaseFragment(R.layout.create_user_fragment) {
         super.onViewCreated(view, savedInstanceState)
         manageSubscription()
         manageEvents()
+        binding.personForm.apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                AppTheme {
+                    PersonForm(entries = viewModel.entriess) { value, type ->
+                        when (type) {
+                            EntryType.FirstName -> viewModel.setFirstName(value)
+                            EntryType.LastName -> viewModel.setLastName(value)
+                            EntryType.Age -> viewModel.setAge(value)
+                            EntryType.Profession -> viewModel.setProfession(value)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun manageEvents() {
-        binding.etFirstName.textChanges().subscribe {
-            viewModel.setFirstName(it.toString())
-        }.isDisposed
-
-        binding.etLastName.textChanges().subscribe {
-            viewModel.setLastName(it.toString())
-        }.isDisposed
-
-        binding.etAge.textChanges().subscribe {
-            viewModel.setAge(it.toString())
-        }.isDisposed
-
-        binding.etProfession.textChanges().subscribe {
-            viewModel.setProfession(it.toString())
-        }.isDisposed
-
         binding.createButton.root.setOnClickListener {
             viewModel.createUser()
         }
