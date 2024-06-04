@@ -9,5 +9,4 @@ buildscript {
 plugins {
     alias(libs.plugins.andoridApplicationPlugin) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
-    alias(libs.plugins.daggerHiltAndroid) apply false
 }

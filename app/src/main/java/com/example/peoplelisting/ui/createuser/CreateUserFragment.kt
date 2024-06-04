@@ -17,15 +17,13 @@ import com.example.peoplelisting.internal.extensions.viewBinding
 import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.listuser.ListUsersViewModel
 import com.example.peoplelisting.ui.screens.createpeople.model.EntryType
-import com.example.peoplelisting.ui.screens.createpeople.model.FormEntry
 import com.example.peoplelisting.ui.screens.createpeople.view.PersonForm
 import com.example.peoplelisting.ui.snackbar.CustomSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarData
 import com.example.peoplelisting.ui.theme.AppTheme
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-@AndroidEntryPoint
 class CreateUserFragment : BaseFragment(R.layout.create_user_fragment) {
     override val screenTitle: String
         get() = getString(R.string.create_user_title)
@@ -33,7 +31,7 @@ class CreateUserFragment : BaseFragment(R.layout.create_user_fragment) {
         get() = true
 
     private val listingViewModel: ListUsersViewModel by activityViewModels()
-    private val viewModel: CreateUserViewModel by viewModels()
+    private val viewModel: CreateUserViewModel by viewModel()
     private val binding: CreateUserFragmentBinding by viewBinding(CreateUserFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

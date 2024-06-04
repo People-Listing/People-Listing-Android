@@ -4,21 +4,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.repository.PeopleRepository
-import com.example.peoplelisting.internal.utilities.getString
 import com.example.peoplelisting.ui.screens.base.BaseViewModel
 import com.example.peoplelisting.ui.screens.base.ErrorState
 import com.example.peoplelisting.ui.screens.base.ViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.io.IOException
-import javax.inject.Inject
 
-@HiltViewModel
-class ListUsersViewModel @Inject constructor(private val peopleRepository: PeopleRepository) :
+
+class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
     BaseViewModel<PeopleListingViewIntent, PeopleListingUiState>() {
     private var isFetched: Boolean = false
     fun setFreshlyCreatedUser(personDto: PersonDto) {

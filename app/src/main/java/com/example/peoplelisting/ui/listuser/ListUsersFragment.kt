@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.peoplelisting.R
 import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
@@ -24,11 +23,9 @@ import com.example.peoplelisting.ui.snackbar.ComposeSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
 import com.example.peoplelisting.ui.theme.AppTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
-
-@AndroidEntryPoint
 class ListUsersFragment : BaseFragment() {
     override val screenTitle: String
         get() = getString(R.string.list_user_title)
@@ -43,7 +40,7 @@ class ListUsersFragment : BaseFragment() {
             )
             setContent {
                 val scope = rememberCoroutineScope()
-                val vm: ListUsersViewModel = hiltViewModel(requireActivity())
+                val vm: ListUsersViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = requireActivity())
                 LaunchedEffect(key1 = Unit) {
                     vm.handleIntent(PeopleListingViewIntent.LoadData)
                 }

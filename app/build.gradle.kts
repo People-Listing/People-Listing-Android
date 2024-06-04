@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.andoridApplicationPlugin)
     id("androidx.navigation.safeargs")
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.daggerHiltAndroid)
     id("kotlin-kapt")
 }
 
@@ -46,7 +45,11 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.viewmodel.lifecycle)
     implementation(libs.compose.livedata)
     implementation(libs.androidx.activity.compose)
@@ -83,15 +86,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.retrofit2.kotlin.coroutines.adapter)
 
-    // Dependency Injection (Kodein)
-    implementation(libs.kodein.di)
-    implementation(libs.kodein.di.framework.androidx)
-    implementation(libs.kodein.di.framework.androidx.viewmodel)
 
 
-    // Dependency Injection (Hilt)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
 
 
     // Timber
