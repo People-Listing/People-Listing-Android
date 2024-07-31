@@ -71,7 +71,7 @@ fun PersonCard(modifier: Modifier = Modifier, personDto: PersonDto) {
             }
             Text(
                 text = personDto.profession,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 style = TextStyle(
                     fontFamily = din, fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,

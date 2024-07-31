@@ -9,6 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.peoplelisting.internal.managers.NavigationManager
 import com.example.peoplelisting.ui.main.MainViewModel
+import com.example.peoplelisting.ui.screens.base.BaseViewModel
+import com.example.peoplelisting.ui.screens.base.UiState
+import com.example.peoplelisting.ui.screens.base.ViewIntent
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 abstract class BaseFragment : Fragment /*, DIAware*/ {
 

@@ -6,14 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import com.example.peoplelisting.R
+import com.example.peoplelisting.data.network.NetworkResponse
 import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
@@ -23,7 +24,6 @@ import com.example.peoplelisting.ui.snackbar.ComposeSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
 import com.example.peoplelisting.ui.theme.AppTheme
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class ListUsersFragment : BaseFragment() {
@@ -39,36 +39,25 @@ class ListUsersFragment : BaseFragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                val scope = rememberCoroutineScope()
                 val vm: ListUsersViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = requireActivity())
                 LaunchedEffect(key1 = Unit) {
-                    vm.handleIntent(PeopleListingViewIntent.LoadData)
+                    if (savedInstanceState == null)
+                        vm.handleIntent(PeopleListingViewIntent.LoadData)
                 }
-                val errorState = vm.errorState.observeAsState(initial = null).value
-                val state = vm.uiState.observeAsState(initial = PeopleListingUiState.LOADING).value
+                val errorState by vm.errorState.observeAsState(initial = null)
+                val state by vm.uiState.observeAsState(initial = PeopleListingUiState.FETCHING)
                 AppTheme {
                     Box {
                         when (state) {
-                            PeopleListingUiState.LOADING -> ShimmeringList()
-                            is PeopleListingUiState.REFRESHING -> {
-                                val people = state.people
-                                ListUserScreen(
-                                    people = people,
-                                    isRefreshing = true,
-                                    onRefresh = {},
-                                    onClick = ::navigateToAddPersonScreen
-                                )
-                            }
-
+                            PeopleListingUiState.FETCHING -> ShimmeringList()
                             is PeopleListingUiState.NORMAL -> {
-                                val people = state.people
+                                val people = (state as PeopleListingUiState.NORMAL).people
+                                val isRefreshing = (state as PeopleListingUiState.NORMAL).isRefreshing
                                 ListUserScreen(
                                     people = people,
-                                    isRefreshing = false,
+                                    isRefreshing = isRefreshing,
                                     onRefresh = {
-                                        scope.launch {
-                                            vm.handleIntent(PeopleListingViewIntent.RefreshData)
-                                        }
+                                        if (!isRefreshing) vm.handleIntent(PeopleListingViewIntent.RefreshData)
                                     },
                                     onClick = ::navigateToAddPersonScreen
                                 )
@@ -80,10 +69,15 @@ class ListUsersFragment : BaseFragment() {
                             } else {
                                 null
                             }
+                            val errorMessage = when (errorState) {
+                                is NetworkResponse.NetworkError -> R.string.no_internet
+                                else -> R.string.get_people_error
+
+                            }
                             ComposeSnackBar(
                                 modifier = Modifier.align(Alignment.BottomCenter),
                                 snackBarData = SnackBarData(
-                                    stringResource(id = this.errorMessage), duration = duration, snackBarButtonData =
+                                    stringResource(id = errorMessage), duration = duration, snackBarButtonData =
                                     SnackBarButtonData(listener = {
                                         if (state is PeopleListingUiState.NORMAL) {
                                             vm.handleIntent(PeopleListingViewIntent.RefreshData)

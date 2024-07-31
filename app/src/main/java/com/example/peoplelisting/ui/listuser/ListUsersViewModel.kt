@@ -1,11 +1,10 @@
 package com.example.peoplelisting.ui.listuser
 
 import androidx.lifecycle.viewModelScope
-import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
+import com.example.peoplelisting.data.network.NetworkResponse
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.ui.screens.base.BaseViewModel
-import com.example.peoplelisting.ui.screens.base.ErrorState
 import com.example.peoplelisting.ui.screens.base.ViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
@@ -27,10 +26,9 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
         if (checkIfFetched && isFetched) return
         viewModelScope.launch {
             if (isRefreshing) {
-                val current = (_uiState.value as PeopleListingUiState.NORMAL).people
-                _uiState.value = PeopleListingUiState.REFRESHING(current)
+                _uiState.value = (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = true)
             } else {
-                _uiState.value = PeopleListingUiState.LOADING
+                _uiState.value = PeopleListingUiState.FETCHING
             }
             _errorState.value = null
             try {
@@ -45,22 +43,21 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
                     _uiState.value = PeopleListingUiState.NORMAL(personsDto)
                     _errorState.value = null
                 } else {
-                    if(isRefreshing){
-                        val current = (_uiState.value as PeopleListingUiState.REFRESHING).people
-                        _uiState.value = PeopleListingUiState.NORMAL(current)
+                    if (isRefreshing) {
+                        _uiState.value = (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = false)
                     }
-                    _errorState.value = ErrorState(R.string.get_people_error)
+                    _errorState.value = NetworkResponse.UnknownError(null)
                 }
             } catch (ex: Exception) {
-                val message = when (ex) {
-                    is IOException -> R.string.no_internet
-                    else -> R.string.get_people_error
+                val error = when (ex) {
+                    is IOException -> NetworkResponse.NetworkError(ex)
+                    else -> NetworkResponse.UnknownError(null)
                 }
-                if(isRefreshing){
-                    val current = (_uiState.value as PeopleListingUiState.REFRESHING).people
-                    _uiState.value = PeopleListingUiState.NORMAL(current) // turn off refreshing
+                if (isRefreshing) {
+                    _uiState.value =
+                        (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = false) // turn off refreshing
                 }
-                _errorState.value = ErrorState(message)
+                _errorState.value = error
             }
         }
     }

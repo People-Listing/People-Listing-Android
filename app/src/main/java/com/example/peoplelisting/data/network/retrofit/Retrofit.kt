@@ -13,7 +13,7 @@ object Retrofit {
 
     const val API_TIME_OUT = 60L
 
-    const val BASE_URL = "http://10.0.0.17:3002/"
+    const val BASE_URL = "http://10.0.0.16:3002/"
     val loggingInterceptor = HttpLoggingInterceptor { message ->
         Timber.d(message)
     }
