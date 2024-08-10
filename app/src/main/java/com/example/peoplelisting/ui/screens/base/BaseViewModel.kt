@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.peoplelisting.data.network.NetworkResponse
 
+/**
+ * Base ViewModel that handles intents and set UI states and Error States
+ */
 abstract class BaseViewModel<VI : ViewIntent, S : UiState> : ViewModel() {
     protected val _uiState = MutableLiveData<S>()
     val uiState: LiveData<S>
