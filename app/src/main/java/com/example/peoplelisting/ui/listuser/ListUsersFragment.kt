@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.peoplelisting.R
+import com.example.peoplelisting.data.mock.MockedList
 import com.example.peoplelisting.data.model.dto.ListItem
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.model.dto.SectionTitle
@@ -52,13 +55,13 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
             current: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder
         ): Boolean {
-            if (current is PeopleListingAdapter.PersonViewHolder && target is PeopleListingAdapter.PersonViewHolder) {
+            if (current is PeopleListingAdapter.DraggableViewHolder && target is PeopleListingAdapter.DraggableViewHolder) {
                 val fromWidget = current.widgetType
                 val toWidget = target.widgetType
                 return (fromWidget == WidgetType.CURATED_WIDGET && toWidget == WidgetType.MY_WIDGET || (fromWidget
                         == WidgetType.MY_WIDGET && toWidget == WidgetType.MY_WIDGET))
             }
-            if (current is PeopleListingAdapter.PersonViewHolder && target is PeopleListingAdapter.TitleViewHolder) {
+            if (current is PeopleListingAdapter.DraggableViewHolder && target is PeopleListingAdapter.TitleViewHolder) {
                 return target.widgetType == WidgetType.CURATED_WIDGET && current.adapterPosition < target
                     .adapterPosition && draggingCurated
             }
@@ -66,7 +69,7 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
         }
 
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && (viewHolder as PeopleListingAdapter.PersonViewHolder)
+            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && (viewHolder as PeopleListingAdapter.DraggableViewHolder)
                     .widgetType == WidgetType.CURATED_WIDGET
             ) {
                 draggingCurated = true
@@ -98,13 +101,13 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
             binding.swipeRefresh.isEnabled = false
             val item = items?.removeAt(fromPosition)
             if (target is PeopleListingAdapter.TitleViewHolder) {
-                (viewHolder as PeopleListingAdapter.PersonViewHolder).widgetType = WidgetType.CURATED_WIDGET
-                (item as PersonDto).widgetType = WidgetType.CURATED_WIDGET
+                (viewHolder as PeopleListingAdapter.DraggableViewHolder).widgetType = WidgetType.CURATED_WIDGET
+                item?.widgetType = WidgetType.CURATED_WIDGET
             } else {
-                (viewHolder as PeopleListingAdapter.PersonViewHolder).widgetType = WidgetType.MY_WIDGET
-                (item as PersonDto).widgetType = WidgetType.MY_WIDGET
+                (viewHolder as PeopleListingAdapter.DraggableViewHolder).widgetType = WidgetType.MY_WIDGET
+                item?.widgetType = WidgetType.MY_WIDGET
             }
-            items?.add(toPosition, item)
+            items?.add(toPosition, item!!)
             binding.people.adapter?.notifyItemMoved(fromPosition, toPosition)
             Timber.tag("TOUCH HELPER").i("onMove")
             return true
@@ -193,13 +196,7 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
                         setEmptyResult()
                     } else {
                         stopLoading()
-                        items = it.data?.map { d -> d.copy() }?.toMutableList()
-                        items?.forEachIndexed { index, listItem ->
-                            if (index in 0..2) (listItem as PersonDto).widgetType = WidgetType.MY_WIDGET
-                            else (listItem as PersonDto).widgetType = WidgetType.CURATED_WIDGET
-                        }
-                        items?.add(0, SectionTitle("My Widgets", "TITLE-1", WidgetType.MY_WIDGET))
-                        items?.add(4, SectionTitle("Curated Widgets", "TITLE-2", WidgetType.CURATED_WIDGET))
+                        items = MockedList.items.toMutableList()
                         (binding.people.adapter as PeopleListingAdapter).submitList(items)
                         setTotalCount(it.data?.count() ?: 0)
                     }
@@ -220,7 +217,19 @@ class ListUsersFragment : BaseFragment(R.layout.list_users_fragment) {
     }
 
     private fun setUpRecyclerView() {
-        binding.people.layoutManager = LinearLayoutManager(requireContext())
+        val manager = GridLayoutManager(requireContext(),2)
+        manager.spanSizeLookup = object : SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                val item = binding.people.adapter?.getItemViewType(position)
+                return if(item == PeopleListingAdapter.CARD) {
+                    1
+                } else {
+                    2
+                }
+            }
+
+        }
+        binding.people.layoutManager = manager
         val adapter = PeopleListingAdapter(itemTouchListener)
         binding.people.adapter = adapter
         (binding.people.adapter as PeopleListingAdapter).hasStableIds()

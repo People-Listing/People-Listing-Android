@@ -6,11 +6,11 @@ data class PersonDto(
     val profession: String = "",
     override val id: String? = null,
     var isLoading: Boolean = false,
-    var widgetType: WidgetType = WidgetType.OTHER
-): ListItem(id)
-data class SectionTitle(val title: String, override val id: String? = null, val widgetType: WidgetType = WidgetType.OTHER): ListItem
+    override var widgetType: WidgetType = WidgetType.OTHER
+): ListItem(id, widgetType)
+data class SectionTitle(val title: String, override val id: String? = null, override var widgetType: WidgetType = WidgetType.OTHER): ListItem
     (id)
-abstract class ListItem(open val id: String? = "")
+abstract class ListItem(open val id: String? = "", open var widgetType: WidgetType = WidgetType.OTHER)
 
 enum class WidgetType {
     MY_WIDGET,

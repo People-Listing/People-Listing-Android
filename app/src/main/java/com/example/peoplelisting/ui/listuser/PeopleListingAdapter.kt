@@ -6,11 +6,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.viewbinding.ViewBinding
 import com.example.peoplelisting.R
+import com.example.peoplelisting.data.model.dto.CardWidgetItem
 import com.example.peoplelisting.data.model.dto.ListItem
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.model.dto.SectionTitle
 import com.example.peoplelisting.data.model.dto.WidgetType
+import com.example.peoplelisting.databinding.ItemBoxBinding
 import com.example.peoplelisting.databinding.ItemTitleBinding
 import com.example.peoplelisting.databinding.PersonCardLayoutBinding
 import com.example.peoplelisting.databinding.PersonCardShimmeringBinding
@@ -18,11 +21,14 @@ import com.example.peoplelisting.internal.utilities.getQuantityString
 
 class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
     ListAdapter<ListItem, ViewHolder>(PeopleDiffCallBack()) {
-    inner class PersonViewHolder(private val binding: PersonCardLayoutBinding) : ViewHolder(binding.root) {
+
+    abstract inner class DraggableViewHolder(binding: ViewBinding) : ViewHolder(binding.root) {
+        var widgetType = WidgetType.OTHER
+    }
+    inner class PersonViewHolder(private val binding: PersonCardLayoutBinding) : DraggableViewHolder(binding) {
         private val nameTv = binding.name
         private val ageTv = binding.age
         private val professionTv = binding.profession
-        var widgetType = WidgetType.OTHER
         fun bind(person: PersonDto) {
             val age = person.age
             ageTv.text = getQuantityString(R.plurals.age_years_old, age, age.toString())
@@ -33,6 +39,18 @@ class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
                 false
             }
             professionTv.text = person.profession
+        }
+    }
+
+    inner class CardViewHolder(private val binding: ItemBoxBinding) : DraggableViewHolder(binding) {
+        fun bind(card: CardWidgetItem) {
+            binding.tvHeading.text = card.heading
+            binding.tvSubHeading.text = card.subHeading
+            widgetType = card.widgetType
+            binding.root.setOnLongClickListener {
+                onTouchHelper.startDrag(this)
+                false
+            }
         }
     }
 
@@ -67,6 +85,11 @@ class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
                 TitleViewHolder(binding)
             }
 
+            CARD -> {
+                val binding = ItemBoxBinding.inflate(inflater, parent, false)
+                CardViewHolder(binding)
+            }
+
             else -> {
                 val binding = PersonCardLayoutBinding.inflate(inflater, parent, false)
                 PersonViewHolder(binding)
@@ -78,6 +101,7 @@ class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
         when (holder) {
             is PersonViewHolder -> holder.bind(getItem(position) as PersonDto)
             is TitleViewHolder -> holder.bind((getItem(position) as SectionTitle))
+            is CardViewHolder -> holder.bind(getItem(position) as CardWidgetItem)
             is LoadingViewHolder -> holder.startLoading()
         }
     }
@@ -91,7 +115,8 @@ class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
             } else {
                 OTHER
             }
-        } else {
+        } else if (item is CardWidgetItem) CARD
+        else {
             OTHER
         }
 
@@ -107,6 +132,7 @@ class PeopleListingAdapter(private val onTouchHelper: ItemTouchHelper) :
         const val LOADING = 0
         const val OTHER = 1
         const val TITLE = 2
+        const val CARD = 3
     }
 }
 

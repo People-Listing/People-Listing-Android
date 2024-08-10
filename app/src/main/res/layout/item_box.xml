@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/home_cards_background"
+    android:gravity="center"
+    android:layout_marginHorizontal="6dp"
+    android:paddingHorizontal="34dp"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="28dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:id="@+id/ivIcon"
+        android:rotation="90"
+        android:tint="@color/black"
+        android:src="@drawable/ic_back_arrow" />
+
+    <TextView
+        android:id="@+id/tvHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        app:fontFamily="@font/din_bold"
+        tools:text="Sultan Khan" />
+
+    <TextView
+        android:id="@+id/tvSubHeading"
+        tools:text="SAR 1,000"
+        android:textColor="@color/black"
+        android:textSize="11sp"
+        app:fontFamily="@font/din_regular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
