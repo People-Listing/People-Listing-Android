@@ -13,13 +13,15 @@
 
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/personForm"
-            android:layout_marginBottom="48dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginBottom="48dp" />
 
-        <include
+        <androidx.compose.ui.platform.ComposeView
             android:id="@+id/createButton"
-            layout="@layout/create_people_button" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="48dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

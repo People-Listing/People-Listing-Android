@@ -13,10 +13,11 @@ import java.io.IOException
 
 
 class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
-    BaseViewModel<PeopleListingViewIntent, PeopleListingUiState>() {
+    BaseViewModel<PeopleListingUiState>() {
     private var isFetched: Boolean = false
     fun setFreshlyCreatedUser(personDto: PersonDto) {
-        val current = (_uiState.value as? PeopleListingUiState.NORMAL)?.people?.toMutableList() ?: mutableListOf()
+        val current = (_uiState.value as? PeopleListingUiState.NORMAL)?.people?.toMutableList()
+            ?: mutableListOf()
         current.add(0, personDto)
         _uiState.value = PeopleListingUiState.NORMAL(current)
     }
@@ -26,7 +27,8 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
         if (checkIfFetched && isFetched) return
         viewModelScope.launch {
             if (isRefreshing) {
-                _uiState.value = (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = true)
+                _uiState.value =
+                    (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = true)
             } else {
                 _uiState.value = PeopleListingUiState.FETCHING
             }
@@ -44,7 +46,8 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
                     _errorState.value = null
                 } else {
                     if (isRefreshing) {
-                        _uiState.value = (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = false)
+                        _uiState.value =
+                            (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = false)
                     }
                     _errorState.value = NetworkResponse.UnknownError(null)
                 }
@@ -65,7 +68,10 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
     override fun handleIntent(intent: ViewIntent) {
         when (intent) {
             PeopleListingViewIntent.LoadData -> getMyPeople(checkIfFetched = true)
-            PeopleListingViewIntent.RefreshData -> getMyPeople(checkIfFetched = false, isRefreshing = true)
+            PeopleListingViewIntent.RefreshData -> getMyPeople(
+                checkIfFetched = false,
+                isRefreshing = true
+            )
         }
     }
 }

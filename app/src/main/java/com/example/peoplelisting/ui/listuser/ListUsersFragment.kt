@@ -32,14 +32,19 @@ class ListUsersFragment : BaseFragment() {
     override val showBackButton: Boolean
         get() = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val composeView = ComposeView(requireContext())
         composeView.apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                val vm: ListUsersViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = requireActivity())
+                val vm: ListUsersViewModel =
+                    koinViewModel<ListUsersViewModel>(viewModelStoreOwner = requireActivity())
                 LaunchedEffect(key1 = Unit) {
                     if (savedInstanceState == null)
                         vm.handleIntent(PeopleListingViewIntent.LoadData)
@@ -52,7 +57,8 @@ class ListUsersFragment : BaseFragment() {
                             PeopleListingUiState.FETCHING -> ShimmeringList()
                             is PeopleListingUiState.NORMAL -> {
                                 val people = (state as PeopleListingUiState.NORMAL).people
-                                val isRefreshing = (state as PeopleListingUiState.NORMAL).isRefreshing
+                                val isRefreshing =
+                                    (state as PeopleListingUiState.NORMAL).isRefreshing
                                 ListUserScreen(
                                     people = people,
                                     isRefreshing = isRefreshing,
@@ -77,7 +83,9 @@ class ListUsersFragment : BaseFragment() {
                             ComposeSnackBar(
                                 modifier = Modifier.align(Alignment.BottomCenter),
                                 snackBarData = SnackBarData(
-                                    stringResource(id = errorMessage), duration = duration, snackBarButtonData =
+                                    stringResource(id = errorMessage),
+                                    duration = duration,
+                                    snackBarButtonData =
                                     SnackBarButtonData(listener = {
                                         if (state is PeopleListingUiState.NORMAL) {
                                             vm.handleIntent(PeopleListingViewIntent.RefreshData)
