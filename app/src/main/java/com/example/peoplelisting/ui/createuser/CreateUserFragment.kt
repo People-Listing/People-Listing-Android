@@ -63,14 +63,13 @@ class CreateUserFragment : BaseFragment() {
                 val listingViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = requireActivity())
                 val viewModel = koinViewModel<CreateUserViewModel>()
                 val uiState by viewModel.uiState.observeAsState()
-                val entries: List<FormEntry>
+                val entries by viewModel.entries.observeAsState()
                 val isButtonEnabled: Boolean
                 val alpha: Float
                 val isLoading: Boolean
                 when (uiState) {
                     is CreatePersonUiState.Normal -> {
                         (requireActivity() as AppCompatActivity).stopIgnoringTouchEvents()
-                        entries = (uiState as CreatePersonUiState.Normal).entries
                         isButtonEnabled = (uiState as CreatePersonUiState.Normal).isButtonEnabled
                         alpha = if (isButtonEnabled) 1.0f else 0.5f
                         isLoading = false
@@ -78,7 +77,6 @@ class CreateUserFragment : BaseFragment() {
 
                     is CreatePersonUiState.Loading -> {
                         (requireActivity() as AppCompatActivity).startIgnoringTouchEvents()
-                        entries = (uiState as CreatePersonUiState.Loading).entries
                         isButtonEnabled = false
                         isLoading = true
                         alpha = 1.0f
@@ -86,7 +84,6 @@ class CreateUserFragment : BaseFragment() {
 
                     is CreatePersonUiState.Success -> {
                         (requireActivity() as AppCompatActivity).stopIgnoringTouchEvents()
-                        entries = listOf()
                         isButtonEnabled = false
                         alpha = 0.5f
                         isLoading = false
@@ -105,7 +102,7 @@ class CreateUserFragment : BaseFragment() {
                             rememberScrollState()
                         )
                     ) {
-                        PersonForm(entries = entries) { value, type ->
+                        PersonForm(entries = entries ?: listOf()) { value, type ->
                             viewModel.handleIntent(CreatePersonIntent.SetEntry(type, value))
                         }
                         RoundedButton(

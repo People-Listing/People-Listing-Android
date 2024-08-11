@@ -28,6 +28,11 @@ import java.io.IOException
 
 class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
     BaseViewModel<CreatePersonUiState>() {
+
+    private val _entries = MutableLiveData(getEntries())
+    val entries: LiveData<List<FormEntry>>
+        get() = _entries
+
     private fun getEntries() = listOf(
         FormEntry(
             hint = R.string.first_name_hint,
@@ -53,47 +58,39 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
     )
 
     init {
-        _uiState.value = CreatePersonUiState.Normal(getEntries(), false)
+        _uiState.value = CreatePersonUiState.Normal( false)
     }
 
 
     private fun shouldEnableCreate(): Boolean {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        return entries.all { it.valueState.isNotEmpty() }
+        val entries = _entries.value
+        return entries?.all { it.valueState.isNotEmpty() } ?: false
     }
 
     private fun setFirstName(firstName: String) {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        entries.firstOrNull { it.entryType == EntryType.FirstName }?.valueState = firstName
+        _entries.value?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState = firstName
         _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            entries = entries,
             isButtonEnabled = shouldEnableCreate()
         )
     }
 
     private fun setLastName(lastName: String) {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        entries.firstOrNull { it.entryType == EntryType.LastName }?.valueState = lastName
+        _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState = lastName
         _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            entries = entries,
             isButtonEnabled = shouldEnableCreate()
         )
     }
 
     private fun setAge(age: String) {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        entries.firstOrNull { it.entryType == EntryType.Age }?.valueState = age
+        _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState = age
         _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            entries = entries,
             isButtonEnabled = shouldEnableCreate()
         )
     }
 
     private fun setProfession(profession: String) {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        entries.firstOrNull { it.entryType == EntryType.Profession }?.valueState = profession
+        _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState = profession
         _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            entries = entries,
             isButtonEnabled = shouldEnableCreate()
         )
     }
@@ -109,23 +106,21 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
 
 
     private fun createUser() {
-        val entries = (_uiState.value as CreatePersonUiState.Normal).entries
-        _uiState.value = CreatePersonUiState.Loading(entries)
+        _uiState.value = CreatePersonUiState.Loading
         val firstName =
-            entries.firstOrNull { it.entryType == EntryType.FirstName }?.valueState ?: ""
-        val lastName = entries.firstOrNull { it.entryType == EntryType.LastName }?.valueState ?: ""
+            _entries.value?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState ?: ""
+        val lastName =  _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState ?: ""
         val age: Int =
-            entries.firstOrNull { it.entryType == EntryType.Age }?.valueState?.toIntOrNull() ?: 0
+            _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState?.toIntOrNull() ?: 0
         val profession =
-            entries.firstOrNull { it.entryType == EntryType.Profession }?.valueState ?: ""
+            _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState ?: ""
         viewModelScope.launch {
             try {
                 val response = peopleRepository.createUser(firstName, lastName, age, profession)
                 if (response.isSuccessful) {
                     _uiState.value = CreatePersonUiState.Success(response.body()!!.toPersonDto())
                 } else {
-                    val previous = (_uiState.value as CreatePersonUiState.Loading).entries
-                    _uiState.value = CreatePersonUiState.Normal(previous, true)
+                    _uiState.value = CreatePersonUiState.Normal( true)
                 }
             } catch (ex: Exception) {
                 Timber.tag("api error").i("exception $ex")
@@ -133,8 +128,7 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
                     is IOException -> getString(R.string.no_internet)
                     else -> null
                 }
-                val previous = (_uiState.value as CreatePersonUiState.Loading).entries
-                _uiState.value = CreatePersonUiState.Normal(previous, true)
+                _uiState.value = CreatePersonUiState.Normal( true)
             }
         }
     }
