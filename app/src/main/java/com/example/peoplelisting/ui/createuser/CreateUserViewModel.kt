@@ -28,22 +28,6 @@ import java.io.IOException
 
 class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
     BaseViewModel<CreatePersonUiState>() {
-    private val _createUserResponse = MutableLiveData<Resource<PersonDto>>()
-    val createUserResponse: LiveData<Resource<PersonDto>>
-        get() = _createUserResponse
-
-    private val _firstName = MutableLiveData<String>()
-
-    private val _lastName = MutableLiveData<String>()
-
-    private val _age = MutableLiveData<String>()
-
-    private val _profession = MutableLiveData<String>()
-
-    private val _enableCreate = MediatorLiveData<Boolean>()
-    val enableCreate: LiveData<Boolean>
-        get() = _enableCreate
-
     private fun getEntries() = listOf(
         FormEntry(
             hint = R.string.first_name_hint,
