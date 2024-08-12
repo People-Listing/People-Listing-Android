@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
+import com.example.peoplelisting.data.network.NetworkResponse
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.data.resource.Resource
 import com.example.peoplelisting.internal.extensions.setFailure
@@ -21,6 +22,7 @@ import com.example.peoplelisting.ui.screens.createpeople.intent.CreatePersonInte
 import com.example.peoplelisting.ui.screens.createpeople.model.EntryType
 import com.example.peoplelisting.ui.screens.createpeople.model.FormEntry
 import com.example.peoplelisting.ui.screens.createpeople.state.CreatePersonUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
@@ -58,7 +60,7 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
     )
 
     init {
-        _uiState.value = CreatePersonUiState.Normal( false)
+        _uiState.value = CreatePersonUiState.Normal(false)
     }
 
 
@@ -89,7 +91,8 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
     }
 
     private fun setProfession(profession: String) {
-        _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState = profession
+        _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState =
+            profession
         _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
             isButtonEnabled = shouldEnableCreate()
         )
@@ -107,11 +110,14 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
 
     private fun createUser() {
         _uiState.value = CreatePersonUiState.Loading
+        _errorState.value = null
         val firstName =
             _entries.value?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState ?: ""
-        val lastName =  _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState ?: ""
+        val lastName =
+            _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState ?: ""
         val age: Int =
-            _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState?.toIntOrNull() ?: 0
+            _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState?.toIntOrNull()
+                ?: 0
         val profession =
             _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState ?: ""
         viewModelScope.launch {
@@ -120,15 +126,17 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
                 if (response.isSuccessful) {
                     _uiState.value = CreatePersonUiState.Success(response.body()!!.toPersonDto())
                 } else {
-                    _uiState.value = CreatePersonUiState.Normal( true)
+                    _uiState.value = CreatePersonUiState.Normal(true)
+                    _errorState.value = NetworkResponse.UnknownError(null)
                 }
             } catch (ex: Exception) {
                 Timber.tag("api error").i("exception $ex")
-                val message = when (ex) {
-                    is IOException -> getString(R.string.no_internet)
-                    else -> null
+                val error = when (ex) {
+                    is IOException -> NetworkResponse.NetworkError(ex)
+                    else -> NetworkResponse.UnknownError(null)
                 }
-                _uiState.value = CreatePersonUiState.Normal( true)
+                _errorState.value = error
+                _uiState.value = CreatePersonUiState.Normal(true)
             }
         }
     }
