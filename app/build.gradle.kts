@@ -74,6 +74,7 @@ dependencies {
     // Navigation
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    implementation(libs.compose.navigation)
 
     // retrofit
     implementation(libs.retrofit)

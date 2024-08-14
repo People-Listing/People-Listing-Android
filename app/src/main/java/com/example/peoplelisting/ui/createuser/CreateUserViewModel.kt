@@ -121,6 +121,7 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
         val profession =
             _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState ?: ""
         viewModelScope.launch {
+            delay(2_000)
             try {
                 val response = peopleRepository.createUser(firstName, lastName, age, profession)
                 if (response.isSuccessful) {

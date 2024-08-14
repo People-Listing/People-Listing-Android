@@ -33,25 +33,29 @@ class NavigationManager(private val navController: NavController) {
         }
     }
 
-    fun navigateToDirection(
-        navDirections: NavDirections,
-        @IdRes popUpTo: Int? = null,
-        @AnimRes enterAnim: Int? = null,
+    fun navigateToRoute(
+        route: String, popUpInclusive: Boolean, popUpTo: String?, @AnimRes enterAnim: Int? = null,
         @AnimRes exitAnim: Int? = null,
-        @AnimRes popEnterAnim: Int?,
-        @AnimRes popExitAnim: Int?,
-        popUpInclusive: Boolean = false
+        @AnimRes popEnterAnim: Int? = null,
+        @AnimRes popExitAnim: Int? = null
     ) {
         try {
-            val navOptions = getNavOptions(popUpTo, enterAnim, exitAnim,popEnterAnim, popExitAnim, popUpInclusive)
-            navController.navigate(navDirections, navOptions)
+            val navOptions = getNavOptions(
+                popUpTo,
+                enterAnim,
+                exitAnim,
+                popEnterAnim,
+                popExitAnim,
+                popUpInclusive
+            )
+            navController.navigate(route = route, navOptions)
         } catch (ex: IllegalArgumentException) {
             Timber.e(ex)
         }
     }
 
     private fun getNavOptions(
-        @IdRes popUpTo: Int?,
+        popUpTo: String?,
         @AnimRes enterAnim: Int?,
         @AnimRes exitAnim: Int?,
         @AnimRes popEnterAnim: Int?,
@@ -62,8 +66,8 @@ class NavigationManager(private val navController: NavController) {
             .Builder()
         if (enterAnim != null) options.setEnterAnim(enterAnim)
         if (exitAnim != null) options.setExitAnim(exitAnim)
-        if(popEnterAnim != null) options.setPopEnterAnim(popEnterAnim)
-        if(popExitAnim != null) options.setPopExitAnim(popExitAnim)
+        if (popEnterAnim != null) options.setPopEnterAnim(popEnterAnim)
+        if (popExitAnim != null) options.setPopExitAnim(popExitAnim)
         if (popUpTo != null) options.setPopUpTo(popUpTo, popUpInclusive)
         return options.build()
     }

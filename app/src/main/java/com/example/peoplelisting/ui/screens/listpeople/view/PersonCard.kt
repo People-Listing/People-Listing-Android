@@ -89,7 +89,7 @@ fun PersonCardList(
     LazyColumn(
         contentPadding = PaddingValues(vertical = 16.dp), modifier = modifier.fillMaxSize(), verticalArrangement =
         Arrangement.spacedBy(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         items(people, key = { person -> person.id!! }) {
             PersonCard(personDto = it)

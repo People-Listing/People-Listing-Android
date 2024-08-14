@@ -21,6 +21,7 @@ composeBom = "2024.05.00"
 compose-livedata = "1.6.7"
 viewmodel-lifecycle = "2.7.0"
 koin-bom = "3.5.0"
+compose_navigation = "2.7.4"
 
 [libraries]
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -51,10 +52,10 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso_core" }
 navigation-safe-args-gradle-plugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "nav_version" }
 compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose-livedata" }
-viewmodel-lifecycle = {group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel-lifecycle"}
+viewmodel-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel-lifecycle" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
-
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose_navigation" }
 
 
 [plugins]

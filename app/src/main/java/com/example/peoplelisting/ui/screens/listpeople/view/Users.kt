@@ -1,5 +1,6 @@
 package com.example.peoplelisting.ui.screens.listpeople.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,11 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.model.dto.PersonDto
+import com.example.peoplelisting.ui.screens.main.PeopleListingScreenRoute
 import com.example.peoplelisting.ui.theme.AppTheme
-import timber.log.Timber
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ListUserScreen(
+fun Users(
     people: List<PersonDto>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
@@ -45,20 +47,23 @@ fun ListUserScreen(
                 = MaterialTheme.colorScheme.secondary
             ) {
                 Image(
-                    modifier = Modifier.padding(10.dp), painter = painterResource(id = R.drawable.ic_plus_icon),
+                    modifier = Modifier.padding(10.dp),
+                    painter = painterResource(id = R.drawable.ic_plus_icon),
                     contentDescription =
                     null
                 )
             }
+
         }
-    ) { paddingValues ->
-        Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.padding(paddingValues)) {
+    ) { _ ->
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
             ListUserScreenBody(
                 people = people, isRefreshing = isRefreshing,
                 onRefresh = onRefresh
             )
         }
-
     }
 }
 
@@ -102,7 +107,7 @@ fun ListUserScreenBody(
 @Composable
 private fun ListUserScreenPreview() {
     AppTheme {
-        ListUserScreen(
+        Users(
             listOf(
                 PersonDto(name = "Omar", age = 23, profession = "Software Developer", id = "1"),
                 PersonDto(name = "Omar", age = 23, profession = "Software Developer", id = "2"),

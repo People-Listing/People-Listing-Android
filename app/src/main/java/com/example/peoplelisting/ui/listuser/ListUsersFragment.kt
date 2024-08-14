@@ -18,8 +18,8 @@ import com.example.peoplelisting.data.network.NetworkResponse
 import com.example.peoplelisting.ui.base.BaseFragment
 import com.example.peoplelisting.ui.screens.listpeople.intent.PeopleListingViewIntent
 import com.example.peoplelisting.ui.screens.listpeople.state.PeopleListingUiState
-import com.example.peoplelisting.ui.screens.listpeople.view.ListUserScreen
 import com.example.peoplelisting.ui.screens.listpeople.view.ShimmeringList
+import com.example.peoplelisting.ui.screens.listpeople.view.Users
 import com.example.peoplelisting.ui.snackbar.ComposeSnackBar
 import com.example.peoplelisting.ui.snackbar.SnackBarButtonData
 import com.example.peoplelisting.ui.snackbar.SnackBarData
@@ -59,13 +59,12 @@ class ListUsersFragment : BaseFragment() {
                                 val people = (state as PeopleListingUiState.NORMAL).people
                                 val isRefreshing =
                                     (state as PeopleListingUiState.NORMAL).isRefreshing
-                                ListUserScreen(
+                                Users(
                                     people = people,
                                     isRefreshing = isRefreshing,
                                     onRefresh = {
                                         if (!isRefreshing) vm.handleIntent(PeopleListingViewIntent.RefreshData)
-                                    },
-                                    onClick = ::navigateToAddPersonScreen
+                                    }, onClick = {}
                                 )
                             }
                         }
@@ -103,13 +102,4 @@ class ListUsersFragment : BaseFragment() {
         return composeView
     }
 
-    private fun navigateToAddPersonScreen() {
-        navManager.navigateToDirection(
-            ListUsersFragmentDirections.actionListUsersFragmentToCreateUserFragment(),
-            enterAnim = R.anim.enter_from_right,
-            exitAnim = R.anim.exit_to_left,
-            popEnterAnim = R.anim.enter_from_left,
-            popExitAnim = R.anim.exit_to_right
-        )
-    }
 }
