@@ -4,9 +4,8 @@ import com.example.peoplelisting.data.network.retrofit.Retrofit
 import com.example.peoplelisting.data.network.service.PeopleService
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.data.repository.impl.PeopleRepositoryImpl
-import com.example.peoplelisting.ui.createuser.CreateUserViewModel
-import com.example.peoplelisting.ui.listuser.ListUsersViewModel
-import com.example.peoplelisting.ui.main.MainViewModel
+import com.example.peoplelisting.ui.createpeople.view.CreateUserViewModel
+import com.example.peoplelisting.ui.listpeople.view.ListUsersViewModel
 import org.koin.dsl.module
 
 val appModule = module {
