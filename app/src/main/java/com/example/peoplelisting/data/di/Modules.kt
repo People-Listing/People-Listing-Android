@@ -13,7 +13,6 @@ val appModule = module {
 }
 
 val viewModelModule = module {
-    factory { MainViewModel() }
     factory { ListUsersViewModel(get()) }
     factory { CreateUserViewModel(get()) }
 

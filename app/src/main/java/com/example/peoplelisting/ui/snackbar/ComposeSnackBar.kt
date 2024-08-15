@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,7 +51,10 @@ fun ComposeSnackBar(modifier: Modifier = Modifier, snackBarData: SnackBarData) {
                     RoundedCornerShape(15.dp)
                 )
         ) {
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = snackBarData.message, style = TextStyle(
                         fontFamily = din, fontWeight = FontWeight.Normal,
@@ -64,7 +68,9 @@ fun ComposeSnackBar(modifier: Modifier = Modifier, snackBarData: SnackBarData) {
                         )
                     ) {
                         Text(
-                            text = title, color = colorResource(id = titleColor), style = TextStyle(
+                            text = stringResource(id = title),
+                            color = colorResource(id = titleColor),
+                            style = TextStyle(
                                 fontFamily =
                                 gilroy, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp
                             )
@@ -78,7 +84,10 @@ fun ComposeSnackBar(modifier: Modifier = Modifier, snackBarData: SnackBarData) {
                                 containerColor = Color.Transparent
                             )
                     ) {
-                        Image(painter = painterResource(id = R.drawable.ic_close), contentDescription = null)
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = null
+                        )
                     }
                 }
             }
@@ -86,7 +95,10 @@ fun ComposeSnackBar(modifier: Modifier = Modifier, snackBarData: SnackBarData) {
     }
     LaunchedEffect(key1 = Unit) {
         val job = launch {
-            hostState.showSnackbar(message = snackBarData.message, duration = SnackbarDuration.Indefinite)
+            hostState.showSnackbar(
+                message = snackBarData.message,
+                duration = SnackbarDuration.Indefinite
+            )
         }
         snackBarData.duration?.apply {
             delay(this)

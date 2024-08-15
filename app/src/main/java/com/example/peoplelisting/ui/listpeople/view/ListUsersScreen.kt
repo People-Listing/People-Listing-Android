@@ -23,9 +23,8 @@ import com.example.peoplelisting.ui.snackbar.SnackBarData
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ListUsersScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun ListUsersScreen(modifier: Modifier = Modifier, navManager: NavigationManager) {
     val activity = LocalContext.current as ComponentActivity
-    val navManager = NavigationManager(navController)
     val listingViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = activity)
     val errorState by listingViewModel.errorState.observeAsState(initial = null)
     val state by listingViewModel.uiState.observeAsState(initial = PeopleListingUiState.FETCHING)
@@ -48,11 +47,7 @@ fun ListUsersScreen(modifier: Modifier = Modifier, navController: NavController)
                         navManager.navigateToRoute(
                             PeopleListingScreenRoute.Create.name,
                             popUpTo = null,
-                            popUpInclusive = false,
-                            enterAnim = R.anim.enter_from_right,
-                            exitAnim = R.anim.exit_to_left,
-                            popEnterAnim = R.anim.enter_from_left,
-                            popExitAnim = R.anim.exit_to_right
+                            popUpInclusive = false
                         )
                     }
                 )

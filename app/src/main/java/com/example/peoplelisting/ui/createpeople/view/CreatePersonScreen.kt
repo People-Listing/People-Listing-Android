@@ -31,9 +31,8 @@ import org.koin.androidx.compose.koinViewModel
 import java.lang.IllegalArgumentException
 
 @Composable
-fun CreatePersonScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun CreatePersonScreen(modifier: Modifier = Modifier, navManager: NavigationManager) {
     val activity = LocalContext.current as ComponentActivity
-    val navManager = NavigationManager(navController = navController)
     val listingViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = activity)
     val viewModel = koinViewModel<CreateUserViewModel>()
     val uiState by viewModel.uiState.observeAsState()

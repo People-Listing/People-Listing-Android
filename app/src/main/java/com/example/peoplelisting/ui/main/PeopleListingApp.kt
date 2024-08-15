@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.peoplelisting.R
+import com.example.peoplelisting.internal.managers.NavigationManager
 import com.example.peoplelisting.ui.createpeople.view.CreatePersonScreen
 import com.example.peoplelisting.ui.listpeople.view.ListUsersScreen
 import com.example.peoplelisting.ui.theme.AppColor
@@ -82,15 +83,12 @@ fun AppBar(
 @Composable
 fun PeopleListingApp(navController: NavHostController = rememberNavController()) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = PeopleListingScreenRoute.valueOf(
-        currentBackStackEntry?.destination?.route ?: PeopleListingScreenRoute.Listing.name
-    )
-    val canNavigateBack = navController.previousBackStackEntry != null
+    val navManager = NavigationManager(navController)
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             AppBar(
-                canNavigateBack = canNavigateBack,
-                currentRoute = currentRoute
+                canNavigateBack = navManager.canNavigateBack(),
+                currentRoute = navManager.currentRoute(currentBackStackEntry?.destination?.route)
             ) { navController.navigateUp() }
         }
     ) { innerPadding ->
@@ -114,7 +112,12 @@ fun PeopleListingApp(navController: NavHostController = rememberNavController())
                     )
                 }
             ) {
-                ListUsersScreen(modifier = Modifier.fillMaxSize().padding(top = 10.dp), navController)
+                ListUsersScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 10.dp),
+                    navManager
+                )
             }
             composable(route = PeopleListingScreenRoute.Create.name,
                 enterTransition = {
@@ -130,8 +133,10 @@ fun PeopleListingApp(navController: NavHostController = rememberNavController())
                     )
                 }) {
                 CreatePersonScreen(
-                    navController = navController,
-                    modifier = Modifier.fillMaxSize().padding(top = 20.dp)
+                    navManager = navManager,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp)
                 )
             }
         }
