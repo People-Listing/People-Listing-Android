@@ -1,7 +1,7 @@
 package com.example.peoplelisting.data.network.retrofit
 
+import com.example.peoplelisting.data.network.adapters.NetworkResponseAdapterFactory
 import com.google.gson.Gson
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,7 +28,7 @@ object Retrofit {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(Gson()))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .client(okHttpClient)
             .build()
 

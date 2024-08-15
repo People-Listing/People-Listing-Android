@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.R
-import com.example.peoplelisting.data.network.NetworkResponse
+import com.example.peoplelisting.data.network.adapters.NetworkResponse
 import com.example.peoplelisting.data.repository.PeopleRepository
 import com.example.peoplelisting.ui.base.BaseViewModel
 import com.example.peoplelisting.ui.base.ViewIntent
@@ -100,38 +100,30 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
 
 
     private fun createUser() {
+        val firstName = getEntryValue(EntryType.FirstName) ?: return
+        val lastName = getEntryValue(EntryType.LastName) ?: return
+        val age = getEntryValue(EntryType.Age)?.toIntOrNull() ?: return
+        val profession = getEntryValue(EntryType.Profession) ?: return
         _uiState.value = CreatePersonUiState.Loading
         _errorState.value = null
-        val firstName =
-            _entries.value?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState ?: ""
-        val lastName =
-            _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState ?: ""
-        val age: Int =
-            _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState?.toIntOrNull()
-                ?: 0
-        val profession =
-            _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState ?: ""
         viewModelScope.launch {
-            delay(2_000)
-            try {
-                val response = peopleRepository.createUser(firstName, lastName, age, profession)
-                if (response.isSuccessful) {
-                    _uiState.value = CreatePersonUiState.Success(response.body()!!.toPersonDto())
-                } else {
+            when (val response =
+                peopleRepository.createUser(firstName, lastName, age, profession)) {
+                is NetworkResponse.Success -> {
+                    _uiState.value = CreatePersonUiState.Success(response.body!!.toPersonDto())
+                    _errorState.value = null
+                }
+                is NetworkResponse.Failure -> {
                     _uiState.value = CreatePersonUiState.Normal(true)
-                    _errorState.value = NetworkResponse.UnknownError(null)
+                    _errorState.value = response
                 }
-            } catch (ex: Exception) {
-                Timber.tag("api error").i("exception $ex")
-                val error = when (ex) {
-                    is IOException -> NetworkResponse.NetworkError(ex)
-                    else -> NetworkResponse.UnknownError(null)
-                }
-                _errorState.value = error
-                _uiState.value = CreatePersonUiState.Normal(true)
             }
         }
     }
+
+
+    private fun getEntryValue(entryType: EntryType) =
+        _entries.value?.firstOrNull { it.entryType == entryType }?.valueState
 
     override fun handleIntent(intent: ViewIntent) {
         when (intent) {

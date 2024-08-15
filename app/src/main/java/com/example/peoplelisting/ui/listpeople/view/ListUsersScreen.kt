@@ -10,9 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.example.peoplelisting.R
-import com.example.peoplelisting.data.network.NetworkResponse
+import com.example.peoplelisting.data.network.adapters.NetworkResponse
+import com.example.peoplelisting.internal.handlers.AppErrorHandler
 import com.example.peoplelisting.internal.managers.NavigationManager
 import com.example.peoplelisting.ui.listpeople.intent.PeopleListingViewIntent
 import com.example.peoplelisting.ui.listpeople.state.PeopleListingUiState
@@ -59,25 +59,19 @@ fun ListUsersScreen(modifier: Modifier = Modifier, navManager: NavigationManager
             } else {
                 null
             }
-            val errorMessage = when (errorState) {
-                is NetworkResponse.NetworkError -> R.string.no_internet
-                else -> R.string.get_people_error
-
+            val tryAgain = if (state == PeopleListingUiState.FETCHING) {
+                {
+                    listingViewModel.handleIntent(PeopleListingViewIntent.LoadData)
+                }
+            } else {
+                null
             }
-            ComposeSnackBar(
+            AppErrorHandler(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                snackBarData = SnackBarData(
-                    stringResource(id = errorMessage),
-                    duration = duration,
-                    snackBarButtonData =
-                    SnackBarButtonData(listener = {
-                        if (state is PeopleListingUiState.NORMAL) {
-                            listingViewModel.handleIntent(PeopleListingViewIntent.RefreshData)
-                        } else {
-                            listingViewModel.handleIntent(PeopleListingViewIntent.LoadData)
-                        }
-                    })
-                )
+                failure = this,
+                errorMessage = stringResource(id = R.string.get_people_error),
+                duration = duration,
+                tryAgain = tryAgain
             )
         }
 

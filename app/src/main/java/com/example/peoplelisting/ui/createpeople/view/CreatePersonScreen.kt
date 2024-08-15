@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.peoplelisting.R
-import com.example.peoplelisting.data.network.NetworkResponse
+import com.example.peoplelisting.data.network.adapters.NetworkResponse
 import com.example.peoplelisting.internal.extensions.startIgnoringTouchEvents
 import com.example.peoplelisting.internal.extensions.stopIgnoringTouchEvents
+import com.example.peoplelisting.internal.handlers.AppErrorHandler
 import com.example.peoplelisting.internal.managers.NavigationManager
 import com.example.peoplelisting.ui.listpeople.view.ListUsersViewModel
 import com.example.peoplelisting.ui.createpeople.intent.CreatePersonIntent
@@ -91,17 +91,12 @@ fun CreatePersonScreen(modifier: Modifier = Modifier, navManager: NavigationMana
         }
         errorState?.apply {
             activity.stopIgnoringTouchEvents()
-            val errorMessage = when (errorState) {
-                is NetworkResponse.NetworkError -> R.string.no_internet
-                else -> R.string.create_people_error
-            }
-
-            ComposeSnackBar(
+            AppErrorHandler(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                snackBarData = SnackBarData(
-                    stringResource(id = errorMessage),
-                    duration = 10_000
-                )
+                failure = this,
+                errorMessage = stringResource(id = R.string.create_people_error),
+                duration = 10_000,
+                tryAgain = null
             )
         }
     }
