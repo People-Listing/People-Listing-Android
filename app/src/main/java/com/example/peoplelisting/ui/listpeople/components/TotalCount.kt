@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.listpeople.view
+package com.example.peoplelisting.ui.listpeople.components
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

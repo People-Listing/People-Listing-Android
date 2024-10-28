@@ -9,96 +9,92 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.peoplelisting.R
-import com.example.peoplelisting.data.network.adapters.NetworkResponse
-import com.example.peoplelisting.internal.extensions.startIgnoringTouchEvents
 import com.example.peoplelisting.internal.extensions.stopIgnoringTouchEvents
 import com.example.peoplelisting.internal.handlers.AppErrorHandler
-import com.example.peoplelisting.internal.managers.NavigationManager
+import com.example.peoplelisting.ui.createpeople.components.PersonForm
+import com.example.peoplelisting.ui.createpeople.components.RoundedButton
+import com.example.peoplelisting.ui.createpeople.model.EntryType
 import com.example.peoplelisting.ui.listpeople.view.ListUsersViewModel
-import com.example.peoplelisting.ui.createpeople.intent.CreatePersonIntent
-import com.example.peoplelisting.ui.createpeople.state.CreatePersonUiState
-import com.example.peoplelisting.ui.snackbar.ComposeSnackBar
-import com.example.peoplelisting.ui.snackbar.SnackBarData
 import org.koin.androidx.compose.koinViewModel
-import java.lang.IllegalArgumentException
 
 @Composable
-fun CreatePersonScreen(modifier: Modifier = Modifier, navManager: NavigationManager) {
+fun CreatePersonScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit) {
     val activity = LocalContext.current as ComponentActivity
     val listingViewModel = koinViewModel<ListUsersViewModel>(viewModelStoreOwner = activity)
     val viewModel = koinViewModel<CreateUserViewModel>()
     val uiState by viewModel.uiState.observeAsState()
-    val entries by viewModel.entries.observeAsState()
-    val errorState by viewModel.errorState.observeAsState()
-    val isButtonEnabled: Boolean
-    val alpha: Float
-    val isLoading: Boolean
-    when (uiState) {
-        is CreatePersonUiState.Normal -> {
-            isButtonEnabled =
-                (uiState as CreatePersonUiState.Normal).isButtonEnabled
-            alpha = if (isButtonEnabled) 1.0f else 0.5f
-            isLoading = false
-        }
-
-        is CreatePersonUiState.Loading -> {
-            activity.startIgnoringTouchEvents()
-            isButtonEnabled = false
-            isLoading = true
-            alpha = 1.0f
-        }
-
-        is CreatePersonUiState.Success -> {
-            activity.stopIgnoringTouchEvents()
-            isButtonEnabled = false
-            alpha = 0.5f
-            isLoading = false
-            LaunchedEffect(key1 = Unit) {
-                listingViewModel.setFreshlyCreatedUser((uiState as CreatePersonUiState.Success).person)
-                navManager.navigateUp()
-            }
-        }
-
-        else -> {
-            throw IllegalArgumentException()
-        }
-    }
+    val effect by viewModel.effect.collectAsState(initial = null)
     Box(modifier = modifier) {
+        HandleState(state = uiState,
+            onCreateClicked = { viewModel.handleEvent(CreatePersonUiEvent.CreatePerson) },
+            onInfoChanged = { value, type ->
+                viewModel.handleEvent(CreatePersonUiEvent.SetEntry(type, value))
+            })
+        HandleEffect(modifier = Modifier.align(Alignment.BottomCenter), effect = effect, onDone = {
+            activity.stopIgnoringTouchEvents()
+            listingViewModel.setFreshlyCreatedUser((effect as CreatePersonEffect.Done).person)
+            navigateUp()
+        }, onError = {
+            activity.stopIgnoringTouchEvents()
+        })
+    }
+
+}
+
+@Composable
+fun HandleState(
+    state: CreatePersonUiState?,
+    onCreateClicked: () -> Unit,
+    onInfoChanged: (String, EntryType) -> Unit
+) {
+    state?.apply {
         Column(
             verticalArrangement = Arrangement.spacedBy(48.dp),
             modifier = Modifier.verticalScroll(
                 rememberScrollState()
             )
         ) {
-            PersonForm(entries = entries ?: listOf()) { value, type ->
-                viewModel.handleIntent(CreatePersonIntent.SetEntry(type, value))
-            }
+            PersonForm(entries = state.entries, onInfoChanged = onInfoChanged)
             RoundedButton(
                 modifier = Modifier.padding(bottom = 48.dp),
-                onClick = { viewModel.handleIntent(CreatePersonIntent.CreatePerson) },
+                onClick = onCreateClicked,
                 isEnabled = isButtonEnabled,
-                alpha = alpha,
+                alpha = state.buttonAlpha,
                 isLoading = isLoading
             )
         }
-        errorState?.apply {
-            activity.stopIgnoringTouchEvents()
+    }
+}
+
+@Composable
+fun HandleEffect(
+    modifier: Modifier = Modifier,
+    effect: CreatePersonEffect?,
+    onError: () -> Unit,
+    onDone: () -> Unit
+) {
+    effect?.apply {
+        if (effect is CreatePersonEffect.ShowError) {
+            onError()
             AppErrorHandler(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                failure = this,
+                modifier = modifier,
+                failure = effect.failure,
                 errorMessage = stringResource(id = R.string.create_people_error),
-                duration = 10_000,
+                duration = effect.duration,
                 tryAgain = null
             )
+        } else if (effect is CreatePersonEffect.Done) {
+            onDone()
         }
     }
-
 }

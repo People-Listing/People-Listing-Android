@@ -8,10 +8,6 @@ import com.example.peoplelisting.ui.createpeople.view.CreateUserViewModel
 import com.example.peoplelisting.ui.listpeople.view.ListUsersViewModel
 import org.koin.dsl.module
 
-val appModule = module {
-    includes(viewModelModule, serviceModule, repoModule)
-}
-
 val viewModelModule = module {
     factory { ListUsersViewModel(get()) }
     factory { CreateUserViewModel(get()) }
@@ -24,6 +20,6 @@ val serviceModule = module {
 }
 
 val repoModule = module {
-    single <PeopleRepository> { PeopleRepositoryImpl(get()) }
+    single<PeopleRepository> { PeopleRepositoryImpl(get()) }
 
 }

@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.listpeople.view
+package com.example.peoplelisting.ui.listpeople.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -26,7 +26,6 @@ fun AppErrorHandler(
         is NetworkResponse.Failure.NetworkError -> {
             stringResource(id = R.string.no_internet)
         }
-
         else -> {
             errorMessage
         }

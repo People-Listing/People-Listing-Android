@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.listpeople.view
+package com.example.peoplelisting.ui.listpeople.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.peoplelisting.ui.theme.AppTheme
 
 @Composable
 fun ShimmeringView(modifier: Modifier) {

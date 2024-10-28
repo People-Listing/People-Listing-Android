@@ -4,23 +4,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.data.model.dto.PersonDto
 import com.example.peoplelisting.data.network.adapters.NetworkResponse
 import com.example.peoplelisting.data.repository.PeopleRepository
-import com.example.peoplelisting.ui.base.BaseViewModel
-import com.example.peoplelisting.ui.base.ViewIntent
-import com.example.peoplelisting.ui.listpeople.intent.PeopleListingViewIntent
-import com.example.peoplelisting.ui.listpeople.state.PeopleListingUiState
-import kotlinx.coroutines.delay
+import com.example.peoplelisting.ui.base.view.BaseViewModel
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 
 class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
-    BaseViewModel<PeopleListingUiState>() {
+    BaseViewModel<PeopleListingUiState, PeopleListingEffect, PeopleListingUiEvent>() {
     private var isFetched: Boolean = false
     fun setFreshlyCreatedUser(personDto: PersonDto) {
-        val current = (_uiState.value as? PeopleListingUiState.NORMAL)?.people?.toMutableList()
+        val current = _uiState.value?.people?.toMutableList()
             ?: mutableListOf()
         current.add(0, personDto)
-        _uiState.value = PeopleListingUiState.NORMAL(current)
+        setState { copy(people = current) }
     }
 
 
@@ -28,13 +23,12 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
         if (checkIfFetched && isFetched) return
         viewModelScope.launch {
             if (isRefreshing) {
-                _uiState.value =
-                    (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = true)
+                setState { copy(isRefreshing = true, isLoading = false) }
             } else {
-                _uiState.value = PeopleListingUiState.FETCHING
+                setState { copy(isRefreshing = false, isLoading = true) }
             }
-            _errorState.value = null
-            when(val response = peopleRepository.getUsers()) {
+            sendEffect(null)
+            when (val response = peopleRepository.getUsers()) {
                 is NetworkResponse.Success -> {
                     isFetched = true
                     val persons = response.body
@@ -42,27 +36,49 @@ class ListUsersViewModel(private val peopleRepository: PeopleRepository) :
                     persons?.forEach {
                         personsDto.add(it.toPersonDto())
                     }
-                    _uiState.value = PeopleListingUiState.NORMAL(personsDto)
-                    _errorState.value = null
+                    setState { copy(isLoading = false, isRefreshing = false, people = personsDto) }
+                    sendEffect(null)
                 }
+
                 is NetworkResponse.Failure -> {
-                    if (isRefreshing) {
-                        _uiState.value =
-                            (_uiState.value as PeopleListingUiState.NORMAL).copy(isRefreshing = false)
-                    }
-                    _errorState.value = response
+                    if(isRefreshing)  setState { copy(isRefreshing = false) }
+                    val duration =
+                        if (_uiState.value?.people == null) SHOW_SNACK_BAR_DURATION else null
+                    val tryAgain = if (_uiState.value?.isLoading == true) {
+                        {
+                            handleEvent(PeopleListingUiEvent.LoadData)
+                        }
+                    } else null
+                    sendEffect(
+                        PeopleListingEffect.ShowError(
+                            duration,
+                            response,
+                            tryAgain = tryAgain
+                        )
+                    )
                 }
             }
         }
     }
 
-    override fun handleIntent(intent: ViewIntent) {
-        when (intent) {
-            PeopleListingViewIntent.LoadData -> getMyPeople(checkIfFetched = true)
-            PeopleListingViewIntent.RefreshData -> getMyPeople(
+    override fun handleEvent(event: PeopleListingUiEvent) {
+        when (event) {
+            PeopleListingUiEvent.LoadData -> getMyPeople(checkIfFetched = true)
+            PeopleListingUiEvent.RefreshData -> getMyPeople(
                 checkIfFetched = false,
                 isRefreshing = true
             )
+            PeopleListingUiEvent.OnCreateClicked -> {
+                sendEffect(PeopleListingEffect.NavigateToCreate)
+            }
         }
     }
+
+    override fun createInitialState() = PeopleListingUiState(isLoading = true)
+
+    companion object {
+        const val SHOW_SNACK_BAR_DURATION = 10_000L
+    }
+
+
 }

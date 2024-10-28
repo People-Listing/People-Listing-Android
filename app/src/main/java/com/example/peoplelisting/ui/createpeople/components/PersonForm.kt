@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.createpeople.view
+package com.example.peoplelisting.ui.createpeople.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

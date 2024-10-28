@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.base
+package com.example.peoplelisting.ui.base.view
 
 /**
  * Base State for the UI states to render

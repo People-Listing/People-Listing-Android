@@ -1,4 +1,4 @@
-package com.example.peoplelisting.ui.listpeople.view
+package com.example.peoplelisting.ui.listpeople.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image

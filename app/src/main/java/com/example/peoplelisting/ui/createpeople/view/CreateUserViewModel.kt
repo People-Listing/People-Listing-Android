@@ -1,30 +1,19 @@
 package com.example.peoplelisting.ui.createpeople.view
 
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.peoplelisting.R
 import com.example.peoplelisting.data.network.adapters.NetworkResponse
 import com.example.peoplelisting.data.repository.PeopleRepository
-import com.example.peoplelisting.ui.base.BaseViewModel
-import com.example.peoplelisting.ui.base.ViewIntent
-import com.example.peoplelisting.ui.createpeople.intent.CreatePersonIntent
+import com.example.peoplelisting.ui.base.view.BaseViewModel
 import com.example.peoplelisting.ui.createpeople.model.EntryType
 import com.example.peoplelisting.ui.createpeople.model.FormEntry
-import com.example.peoplelisting.ui.createpeople.state.CreatePersonUiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.IOException
 
 
 class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
-    BaseViewModel<CreatePersonUiState>() {
+    BaseViewModel<CreatePersonUiState, CreatePersonEffect, CreatePersonUiEvent>() {
 
-    private val _entries = MutableLiveData(getEntries())
-    val entries: LiveData<List<FormEntry>>
-        get() = _entries
 
     private fun getEntries() = listOf(
         FormEntry(
@@ -50,43 +39,46 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
         )
     )
 
-    init {
-        _uiState.value = CreatePersonUiState.Normal(false)
-    }
-
-
     private fun shouldEnableCreate(): Boolean {
-        val entries = _entries.value
+        val entries = _uiState.value?.entries
         return entries?.all { it.valueState.isNotEmpty() } ?: false
     }
 
     private fun setFirstName(firstName: String) {
-        _entries.value?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState = firstName
-        _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            isButtonEnabled = shouldEnableCreate()
-        )
+        _uiState.value?.entries?.firstOrNull { it.entryType == EntryType.FirstName }?.valueState = firstName
+        setState {
+            copy(
+                isButtonEnabled = shouldEnableCreate()
+            )
+        }
     }
 
     private fun setLastName(lastName: String) {
-        _entries.value?.firstOrNull { it.entryType == EntryType.LastName }?.valueState = lastName
-        _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            isButtonEnabled = shouldEnableCreate()
-        )
+        _uiState.value?.entries?.firstOrNull { it.entryType == EntryType.LastName }?.valueState = lastName
+        setState {
+            copy(
+                isButtonEnabled = shouldEnableCreate()
+            )
+        }
     }
 
     private fun setAge(age: String) {
-        _entries.value?.firstOrNull { it.entryType == EntryType.Age }?.valueState = age
-        _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            isButtonEnabled = shouldEnableCreate()
-        )
+        _uiState.value?.entries?.firstOrNull { it.entryType == EntryType.Age }?.valueState = age
+        setState {
+            copy(
+                isButtonEnabled = shouldEnableCreate()
+            )
+        }
     }
 
     private fun setProfession(profession: String) {
-        _entries.value?.firstOrNull { it.entryType == EntryType.Profession }?.valueState =
+        _uiState.value?.entries?.firstOrNull { it.entryType == EntryType.Profession }?.valueState =
             profession
-        _uiState.value = (_uiState.value as CreatePersonUiState.Normal).copy(
-            isButtonEnabled = shouldEnableCreate()
-        )
+        setState {
+            copy(
+                isButtonEnabled = shouldEnableCreate()
+            )
+        }
     }
 
     private fun setEntry(type: EntryType, value: String) {
@@ -104,18 +96,32 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
         val lastName = getEntryValue(EntryType.LastName) ?: return
         val age = getEntryValue(EntryType.Age)?.toIntOrNull() ?: return
         val profession = getEntryValue(EntryType.Profession) ?: return
-        _uiState.value = CreatePersonUiState.Loading
-        _errorState.value = null
+        setState {
+            copy(
+                isLoading = true
+            )
+        }
+        sendEffect(null)
         viewModelScope.launch {
             when (val response =
                 peopleRepository.createUser(firstName, lastName, age, profession)) {
                 is NetworkResponse.Success -> {
-                    _uiState.value = CreatePersonUiState.Success(response.body!!.toPersonDto())
-                    _errorState.value = null
+                    setState {
+                        copy(isLoading = false)
+                    }
+                    sendEffect(CreatePersonEffect.Done(response.body!!.toPersonDto()))
                 }
+
                 is NetworkResponse.Failure -> {
-                    _uiState.value = CreatePersonUiState.Normal(true)
-                    _errorState.value = response
+                    setState {
+                        copy(isLoading = false, isButtonEnabled = true)
+                    }
+                    sendEffect(
+                        CreatePersonEffect.ShowError(
+                            duration = 10_000L,
+                            failure = response
+                        )
+                    )
                 }
             }
         }
@@ -123,12 +129,18 @@ class CreateUserViewModel(private val peopleRepository: PeopleRepository) :
 
 
     private fun getEntryValue(entryType: EntryType) =
-        _entries.value?.firstOrNull { it.entryType == entryType }?.valueState
+        _uiState.value?.entries?.firstOrNull { it.entryType == entryType }?.valueState
 
-    override fun handleIntent(intent: ViewIntent) {
-        when (intent) {
-            is CreatePersonIntent.CreatePerson -> createUser()
-            is CreatePersonIntent.SetEntry -> setEntry(intent.entryType, intent.value)
+    override fun handleEvent(event: CreatePersonUiEvent) {
+        when (event) {
+            is CreatePersonUiEvent.CreatePerson -> createUser()
+            is CreatePersonUiEvent.SetEntry -> setEntry(event.entryType, event.value)
         }
     }
+
+    override fun createInitialState() = CreatePersonUiState(
+        isLoading = false,
+        isButtonEnabled = false,
+        entries = getEntries()
+    )
 }

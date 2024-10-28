@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -116,7 +117,15 @@ fun PeopleListingApp(navController: NavHostController = rememberNavController())
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 10.dp),
-                    navManager
+                    navigateToCreate = remember(navManager) {
+                        {
+                            navManager.navigateToRoute(
+                                PeopleListingScreenRoute.Create.name,
+                                popUpTo = null,
+                                popUpInclusive = false
+                            )
+                        }
+                    }
                 )
             }
             composable(route = PeopleListingScreenRoute.Create.name,
@@ -133,10 +142,14 @@ fun PeopleListingApp(navController: NavHostController = rememberNavController())
                     )
                 }) {
                 CreatePersonScreen(
-                    navManager = navManager,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 20.dp)
+                        .padding(top = 20.dp),
+                    navigateUp = remember(navManager) {
+                        {
+                            navManager.navigateUp()
+                        }
+                    }
                 )
             }
         }
