@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.peoplelisting.R
+import com.example.peoplelisting.internal.extensions.startIgnoringTouchEvents
 import com.example.peoplelisting.internal.extensions.stopIgnoringTouchEvents
 import com.example.peoplelisting.internal.handlers.AppErrorHandler
 import com.example.peoplelisting.ui.createpeople.components.PersonForm
@@ -35,18 +36,26 @@ fun CreatePersonScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit) {
     val uiState by viewModel.uiState.observeAsState()
     val effect by viewModel.effect.collectAsState(initial = null)
     Box(modifier = modifier) {
-        HandleState(state = uiState,
+        HandleState(
+            state = uiState,
             onCreateClicked = { viewModel.handleEvent(CreatePersonUiEvent.CreatePerson) },
             onInfoChanged = { value, type ->
                 viewModel.handleEvent(CreatePersonUiEvent.SetEntry(type, value))
-            })
-        HandleEffect(modifier = Modifier.align(Alignment.BottomCenter), effect = effect, onDone = {
-            activity.stopIgnoringTouchEvents()
-            listingViewModel.setFreshlyCreatedUser((effect as CreatePersonEffect.Done).person)
-            navigateUp()
-        }, onError = {
-            activity.stopIgnoringTouchEvents()
-        })
+            },
+            onLoading = { activity.startIgnoringTouchEvents() }
+        )
+        HandleEffect(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            effect = effect,
+            onDone = {
+                activity.stopIgnoringTouchEvents()
+                listingViewModel.setFreshlyCreatedUser((effect as CreatePersonEffect.Done).person)
+                navigateUp()
+            },
+            onError = {
+                activity.stopIgnoringTouchEvents()
+            }
+        )
     }
 
 }
@@ -55,9 +64,13 @@ fun CreatePersonScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit) {
 fun HandleState(
     state: CreatePersonUiState?,
     onCreateClicked: () -> Unit,
-    onInfoChanged: (String, EntryType) -> Unit
+    onInfoChanged: (String, EntryType) -> Unit,
+    onLoading: () -> Unit
 ) {
     state?.apply {
+        if (isLoading) {
+            onLoading()
+        }
         Column(
             verticalArrangement = Arrangement.spacedBy(48.dp),
             modifier = Modifier.verticalScroll(

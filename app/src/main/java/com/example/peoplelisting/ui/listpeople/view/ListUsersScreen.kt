@@ -13,12 +13,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.peoplelisting.R
 import com.example.peoplelisting.internal.handlers.AppErrorHandler
-import com.example.peoplelisting.internal.managers.NavigationManager
 import com.example.peoplelisting.ui.listpeople.components.ShimmeringList
 import com.example.peoplelisting.ui.listpeople.components.Users
-import com.example.peoplelisting.ui.main.PeopleListingScreenRoute
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
 
 @Composable
 fun ListUsersScreen(modifier: Modifier = Modifier, navigateToCreate: () -> Unit) {
