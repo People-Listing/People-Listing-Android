@@ -11,9 +11,13 @@ import retrofit2.http.POST
 
 interface PeopleService {
 
-    @GET("getUsers")
+    @GET(PEOPLE_ENDPOINT)
     suspend fun getPeople(): GenericResponse<List<Person>>
 
-    @POST("addUser")
+    @POST(PEOPLE_ENDPOINT)
     suspend fun createUser(@Body createUserBody: CreateUserBody): GenericResponse<Person>
+
+    companion object {
+        const val PEOPLE_ENDPOINT = "api/v1/people"
+    }
 }

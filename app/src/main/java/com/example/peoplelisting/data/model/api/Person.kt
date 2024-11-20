@@ -4,7 +4,7 @@ import com.example.peoplelisting.data.model.dto.PersonDto
 import com.google.gson.annotations.SerializedName
 
 data class Person(
-    @SerializedName("userId")
+    @SerializedName("id")
     val userId: String? = null,
     @SerializedName("firstName")
     val firstName: String? = null,

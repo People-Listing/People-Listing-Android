@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,21 +38,27 @@ fun CreatePersonScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit) {
         HandleState(
             state = uiState,
             onCreateClicked = { viewModel.handleEvent(CreatePersonUiEvent.CreatePerson) },
-            onInfoChanged = { value, type ->
-                viewModel.handleEvent(CreatePersonUiEvent.SetEntry(type, value))
+            onInfoChanged = remember(viewModel) {
+                { value, type ->
+                    viewModel.handleEvent(CreatePersonUiEvent.SetEntry(type, value))
+                }
             },
-            onLoading = { activity.startIgnoringTouchEvents() }
+            onLoading = remember(activity) { { activity.startIgnoringTouchEvents() } }
         )
         HandleEffect(
             modifier = Modifier.align(Alignment.BottomCenter),
             effect = effect,
-            onDone = {
-                activity.stopIgnoringTouchEvents()
-                listingViewModel.setFreshlyCreatedUser((effect as CreatePersonEffect.Done).person)
-                navigateUp()
+            onDone = remember(activity, listingViewModel) {
+                {
+                    activity.stopIgnoringTouchEvents()
+                    listingViewModel.setFreshlyCreatedUser((effect as CreatePersonEffect.Done).person)
+                    navigateUp()
+                }
             },
-            onError = {
-                activity.stopIgnoringTouchEvents()
+            onError = remember(activity) {
+                {
+                    activity.stopIgnoringTouchEvents()
+                }
             }
         )
     }

@@ -13,9 +13,9 @@ object Retrofit {
 
     const val API_TIME_OUT = 60L
 
-    const val BASE_URL = "http://192.168.10.42:3002/"
-    val loggingInterceptor = HttpLoggingInterceptor { message ->
-        Timber.d(message)
+    const val BASE_URL = "http://192.168.10.42:5123/"
+    private val loggingInterceptor = HttpLoggingInterceptor { message ->
+        Timber.tag("API").d(message)
     }
 
     private val okHttpClient =

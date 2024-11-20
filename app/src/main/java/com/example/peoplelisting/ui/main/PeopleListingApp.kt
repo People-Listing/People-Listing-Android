@@ -35,6 +35,7 @@ import com.example.peoplelisting.ui.createpeople.view.CreatePersonScreen
 import com.example.peoplelisting.ui.listpeople.view.ListUsersScreen
 import com.example.peoplelisting.ui.theme.AppColor
 import com.example.peoplelisting.ui.theme.gilroy
+import timber.log.Timber
 
 
 enum class PeopleListingScreenRoute(@StringRes val title: Int) {
@@ -84,7 +85,9 @@ fun AppBar(
 @Composable
 fun PeopleListingApp(navController: NavHostController = rememberNavController()) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val navManager = NavigationManager(navController)
+    val navManager = remember(navController) {
+        NavigationManager(navController)
+    }
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             AppBar(

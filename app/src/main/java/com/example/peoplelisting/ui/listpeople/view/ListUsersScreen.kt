@@ -4,9 +4,11 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,6 +18,8 @@ import com.example.peoplelisting.internal.handlers.AppErrorHandler
 import com.example.peoplelisting.ui.listpeople.components.ShimmeringList
 import com.example.peoplelisting.ui.listpeople.components.Users
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
+import kotlin.random.Random
 
 @Composable
 fun ListUsersScreen(modifier: Modifier = Modifier, navigateToCreate: () -> Unit) {
@@ -27,10 +31,14 @@ fun ListUsersScreen(modifier: Modifier = Modifier, navigateToCreate: () -> Unit)
         listingViewModel.handleEvent(PeopleListingUiEvent.LoadData)
     }
     Box(modifier = modifier) {
-        HandleState(state = state, onCreateClick = {
-            listingViewModel.handleEvent(PeopleListingUiEvent.OnCreateClicked)
-        }, onRefresh = {
-            if (state?.isRefreshing == false) listingViewModel.handleEvent(PeopleListingUiEvent.RefreshData)
+        HandleState(state = state, onCreateClick = remember(listingViewModel) {
+            {
+                listingViewModel.handleEvent(PeopleListingUiEvent.OnCreateClicked)
+            }
+        }, onRefresh = remember(state, listingViewModel) {
+            {
+                if (state?.isRefreshing == false) listingViewModel.handleEvent(PeopleListingUiEvent.RefreshData)
+            }
         })
         HandleEffect(
             modifier = Modifier.align(Alignment.BottomCenter),
