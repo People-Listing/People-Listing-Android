@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.peoplelisting.ui.theme.AppColor
 
 @Composable
 fun ShimmeringView(modifier: Modifier) {
@@ -35,8 +36,7 @@ fun ShimmeringView(modifier: Modifier) {
             .height(100.dp)
             .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
             .background(
-                shimmeringBrush(
-                    backGround = MaterialTheme.colorScheme.secondary, LocalContext.current
+                shimmeringBrush(LocalContext.current
                         .resources.displayMetrics.widthPixels.toFloat()
                 ),
                 RoundedCornerShape(16.dp)
@@ -61,11 +61,11 @@ fun ShimmeringList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun shimmeringBrush(backGround: Color, targetValue: Float = 1500f): Brush {
+fun shimmeringBrush(targetValue: Float = 1500f): Brush {
     val colors = listOf(
-        backGround.copy(),
-        backGround.copy(0.3f),
-        backGround.copy()
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary
     )
     val transition = rememberInfiniteTransition(label = "")
     val translateAnimation = transition.animateFloat(
